@@ -1,16 +1,16 @@
-import { Mail, Home } from "react-feather";
+import { Home, Mail } from "react-feather";
 
 export default [
   {
-    id: "home",
-    title: "Home",
+    id: "daten",
+    title: "Daten",
     icon: <Home size={20} />,
-    navLink: "/home",
+    navLink: "/daten",
   },
   {
-    id: "secondPage",
-    title: "Second Page",
+    id: "regieplan",
+    title: "Regieplan",
     icon: <Mail size={20} />,
-    navLink: "/second-page",
+    navLink: "/regieplan",
   },
 ];

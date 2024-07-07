@@ -1,14 +1,14 @@
 // ** React Imports
-import { useState, Fragment } from "react";
+import { Fragment, useState } from "react";
 
 // ** Reactstrap Imports
-import { Card, CardBody, Button, ListGroup, ListGroupItem } from "reactstrap";
+import { Button, Card, CardBody, CardHeader, CardTitle, ListGroup, ListGroupItem } from "reactstrap";
 
 // ** Third Party Imports
 import { useDropzone } from "react-dropzone";
-import { FileText, X, DownloadCloud } from "react-feather";
+import { DownloadCloud, FileText, X } from "react-feather";
 
-const FileUploaderMultiple = () => {
+const FileUploaderMultiple = ({onUpload, showTitle = false, showUploadButton = false}) => {
   // ** State
   const [files, setFiles] = useState([]);
 
@@ -78,7 +78,13 @@ const FileUploaderMultiple = () => {
 
   return (
     <Card>
-      {/* <CardHeader><CardTitle tag='h4'>Multiple</CardTitle></CardHeader> */}
+         <CardHeader>
+          {showTitle && <CardTitle>Upload Files 🚀</CardTitle>}
+          {showUploadButton && <div {...getRootProps({className:"cursor-pointer bg-primary text-white px-2 py-1 rounded cursor-pointer"})}>
+          <label className="cursor-pointer">Publish Now</label>
+          <input {...getInputProps()} />
+          </div>}
+        </CardHeader>
       <CardBody>
         <div {...getRootProps({ className: "dropzone" })}>
           <input {...getInputProps()} />
@@ -106,7 +112,10 @@ const FileUploaderMultiple = () => {
               >
                 Remove All
               </Button>
-              <Button color="primary">Upload Files</Button>
+              <Button color="primary" onClick={e => {
+                onUpload(e);
+                handleRemoveAllFiles();
+              }}>Upload Files</Button>
             </div>
           </Fragment>
         ) : null}

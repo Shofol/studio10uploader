@@ -3,22 +3,22 @@ import { Fragment } from "react";
 import { Link } from "react-router-dom";
 
 // ** Third Party Components
-import Proptypes from "prop-types";
 import classnames from "classnames";
+import Proptypes from "prop-types";
 import {
-  Grid,
-  CheckSquare,
-  MessageSquare,
-  Mail,
   Calendar,
+  CheckSquare,
+  Grid,
+  Mail,
+  MessageSquare,
 } from "react-feather";
 
 // ** Reactstrap Imports
 import {
   Breadcrumb,
-  DropdownMenu,
-  DropdownItem,
   BreadcrumbItem,
+  DropdownItem,
+  DropdownMenu,
   DropdownToggle,
   UncontrolledButtonDropdown,
 } from "reactstrap";
@@ -59,7 +59,7 @@ const BreadCrumbs = (props) => {
             <div className="breadcrumb-wrapper vs-breadcrumbs d-sm-block d-none col-12">
               <Breadcrumb>
                 <BreadcrumbItem tag="li">
-                  <Link to="/">Home</Link>
+                  <Link to="/">Daten</Link>
                 </BreadcrumbItem>
                 {renderBreadCrumbs()}
               </Breadcrumb>

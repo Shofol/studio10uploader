@@ -4,8 +4,7 @@ import { DefaultRoute } from "../router/routes";
 export const isObjEmpty = (obj) => Object.keys(obj).length === 0;
 
 // ** Returns K format from a number
-export const kFormatter = (num) =>
-  num > 999 ? `${(num / 1000).toFixed(1)}k` : num;
+export const kFormatter = (num) => (num > 999 ? `${(num / 1000).toFixed(1)}k` : num);
 
 // ** Converts HTML to string
 export const htmlToString = (html) => html.replace(/<\/?[^>]+(>|$)/g, "");
@@ -76,9 +75,9 @@ export const selectThemeColors = (theme) => ({
   ...theme,
   colors: {
     ...theme.colors,
-    primary25: "#7367f01a", // for option hover bg-color
-    primary: "#7367f0", // for selected option bg-color
-    neutral10: "#7367f0", // for tags bg-color
+    primary25: "#3D5A801a", // for option hover bg-color
+    primary: "#3D5A80", // for selected option bg-color
+    neutral10: "#3D5A80", // for tags bg-color
     neutral20: "#ededed", // for input border-color
     neutral30: "#ededed", // for input hover border-color
   },

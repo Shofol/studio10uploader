@@ -3,9 +3,9 @@ import { Fragment, lazy } from "react";
 import { Navigate } from "react-router-dom";
 // ** Layouts
 import BlankLayout from "@layouts/BlankLayout";
-import VerticalLayout from "@src/layouts/VerticalLayout";
-import HorizontalLayout from "@src/layouts/HorizontalLayout";
 import LayoutWrapper from "@src/@core/layouts/components/layout-wrapper";
+import HorizontalLayout from "@src/layouts/HorizontalLayout";
+import VerticalLayout from "@src/layouts/VerticalLayout";
 
 // ** Route Components
 import PublicRoute from "@components/routes/PublicRoute";
@@ -23,10 +23,10 @@ const getLayout = {
 const TemplateTitle = "%s - Studio 10 Uploader";
 
 // ** Default Route
-const DefaultRoute = "/home";
+const DefaultRoute = "/daten";
 
-const Home = lazy(() => import("../../views/Home"));
-const SecondPage = lazy(() => import("../../views/SecondPage"));
+const Daten = lazy(() => import("../../views/Daten"));
+const Regieplan = lazy(() => import("../../views/Regieplan"));
 const Login = lazy(() => import("../../views/Login"));
 const Register = lazy(() => import("../../views/Register"));
 const ForgotPassword = lazy(() => import("../../views/ForgotPassword"));
@@ -40,12 +40,12 @@ const Routes = [
     element: <Navigate replace to={DefaultRoute} />,
   },
   {
-    path: "/home",
-    element: <Home />,
+    path: "/daten",
+    element: <Daten />,
   },
   {
-    path: "/second-page",
-    element: <SecondPage />,
+    path: "/regieplan",
+    element: <Regieplan />,
   },
   {
     path: "/login",
@@ -148,4 +148,5 @@ const getRoutes = (layout) => {
   return AllRoutes;
 };
 
-export { DefaultRoute, TemplateTitle, Routes, getRoutes };
+export { DefaultRoute, Routes, TemplateTitle, getRoutes };
+
