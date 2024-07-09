@@ -1,0 +1,175 @@
+// ** React Imports
+import { useRef, useState } from "react";
+import { Copy, Edit, Trash } from "react-feather";
+
+// ** Reactstrap Imports
+import { Button, Table } from "reactstrap";
+
+const ScheduleList = () => {
+  const [listArr, setListArr] = useState([]);
+  const dragItem = useRef(null);
+  const dragOverItem = useRef(null);
+
+  const swap = (array) => {
+    const tempArray = [...array];
+    const temp = tempArray[dragItem.current];
+    tempArray[dragItem.current] = tempArray[dragOverItem.current];
+    tempArray[dragOverItem.current] = temp;
+    return tempArray;
+  };
+
+  const handleSort = () => {
+    setListArr(swap(listArr));
+  };
+
+  const handleChildSort = (parentIndex, childArray) => {
+    const swappedChildArray = swap(childArray);
+    const tempArray = [...listArr];
+    tempArray[parentIndex].children = swappedChildArray;
+    setListArr(tempArray);
+  };
+
+  return (
+    <Table responsive id="section-to-print">
+      <thead>
+        <tr>
+          <th style={{ width: "100px" }}>Pos</th>
+          <th style={{ width: "100px" }}>Bild</th>
+          <th style={{ width: "100px" }}>Ton</th>
+          <th style={{ width: "100px" }}>Uhrzeit</th>
+          <th style={{ width: "100px" }}>Dauer</th>
+          <th style={{ width: "300px" }}>File-Name</th>
+          <th style={{ width: "300px" }}>Kommentar</th>
+          <th style={{ width: "300px" }} id="section-to-hide">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {listArr.map((item, index) => {
+          return (
+            <>
+              <tr
+                key={item.id}
+                draggable
+                onDragStart={() => (dragItem.current = index)}
+                onDragEnter={() => (dragOverItem.current = index)}
+                onDragEnd={handleSort}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                }}
+              >
+                <td style={{ width: "100px" }} className="bg-light">
+                  {item.id}
+                </td>
+                <td style={{ width: "100px" }} className="bg-light">
+                  {item.mediaType}
+                </td>
+                <td style={{ width: "100px" }} className="bg-light">
+                  {item.media}
+                </td>
+                <td style={{ width: "100px" }} className="bg-light">
+                  {item.startTime}
+                </td>
+                <td style={{ width: "100px" }} className="bg-light">
+                  {item.duration}
+                </td>
+                <td style={{ width: "400px" }} className="bg-light">
+                  {item.name}
+                </td>
+                <td style={{ width: "300px" }} className="bg-light">
+                  {item.comment}
+                </td>
+
+                <td id="section-to-hide" className="bg-light">
+                  <div className="d-flex gap-1">
+                    <Button.Ripple
+                      className="btn-icon"
+                      size="sm"
+                      outline
+                      color="primary"
+                    >
+                      <Copy size={10} />
+                    </Button.Ripple>
+                    <Button.Ripple
+                      className="btn-icon"
+                      size="sm"
+                      outline
+                      color="primary"
+                    >
+                      <Edit size={10} />
+                    </Button.Ripple>
+                    <Button.Ripple
+                      className="btn-icon"
+                      size="sm"
+                      outline
+                      color="primary"
+                    >
+                      <Trash size={10} />
+                    </Button.Ripple>
+                  </div>
+                </td>
+              </tr>
+              {item.children &&
+                item.children.length > 0 &&
+                item.children.map((child, childIndex) => {
+                  return (
+                    <tr
+                      key={child.id}
+                      draggable
+                      onDragStart={() => (dragItem.current = childIndex)}
+                      onDragEnter={() => (dragOverItem.current = childIndex)}
+                      onDragEnd={() => handleChildSort(index, item.children)}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                      }}
+                    >
+                      <td style={{ width: "100px", paddingLeft: "36px" }}>
+                        {child.id}
+                      </td>
+                      <td style={{ width: "100px" }}>{child.mediaType}</td>
+                      <td style={{ width: "100px" }}>{child.media}</td>
+                      <td style={{ width: "100px" }}>{child.startTime}</td>
+                      <td style={{ width: "100px" }}>{child.duration}</td>
+                      <td style={{ width: "300px" }}>{child.name}</td>
+                      <td style={{ width: "300px" }}>{child.comment}</td>
+                      <td id="section-to-hide" className="bg-light">
+                        <div className="d-flex gap-1">
+                          <Button.Ripple
+                            className="btn-icon"
+                            size="sm"
+                            outline
+                            color="primary"
+                          >
+                            <Copy size={10} />
+                          </Button.Ripple>
+                          <Button.Ripple
+                            className="btn-icon"
+                            size="sm"
+                            outline
+                            color="primary"
+                          >
+                            <Edit size={10} />
+                          </Button.Ripple>
+                          <Button.Ripple
+                            className="btn-icon"
+                            size="sm"
+                            outline
+                            color="primary"
+                          >
+                            <Trash size={10} />
+                          </Button.Ripple>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+            </>
+          );
+        })}
+      </tbody>
+    </Table>
+  );
+};
+
+export default ScheduleList;

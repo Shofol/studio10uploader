@@ -5,13 +5,35 @@ import { Fragment, forwardRef, useState } from "react";
 
 // ** Third Party Components
 import DataTable from "react-data-table-component";
-import { ChevronDown, Edit, Trash } from "react-feather";
+import {
+  ChevronDown,
+  Edit,
+  Filter,
+  Image,
+  Music,
+  Search,
+  Trash,
+  Video
+} from "react-feather";
 import ReactPaginate from "react-paginate";
 
 // ** Reactstrap Imports
-import { Card, Col, Input, Label, Row } from "reactstrap";
+import {
+  Card,
+  CardTitle,
+  Col,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Input,
+  InputGroup,
+  InputGroupText,
+  Row,
+  UncontrolledButtonDropdown
+} from "reactstrap";
 
 import data from "../../../utility/data/files";
+import DeleteDaten from "./DeleteDaten";
 import EditDaten from "./EditDaten";
 
 // ** Bootstrap Checkbox Component
@@ -24,6 +46,7 @@ const BootstrapCheckbox = forwardRef((props, ref) => (
 const DatenTable = () => {
   // ** States
   const [modal, setModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchValue, setSearchValue] = useState("");
   const [filteredData, setFilteredData] = useState([]);
@@ -34,8 +57,12 @@ const DatenTable = () => {
     if (modal) {
       setSelectedRowToEdit(null);
     }
-    setModal(!modal)
-};
+    setModal(!modal);
+  };
+
+  const handleDeleteModal = () => {
+    setDeleteModal(!deleteModal);
+  };
 
   const columns = [
     {
@@ -90,7 +117,10 @@ const DatenTable = () => {
               tag="a"
               href="/"
               className="cursor-pointer"
-              onClick={(e) => e.preventDefault()}
+              onClick={(e) => {
+                e.preventDefault();
+                setDeleteModal(!deleteModal);
+              }}
             >
               <Trash size={15} className="text-danger" />
               <span className="align-middle ms-50 text-danger">Delete</span>
@@ -175,23 +205,48 @@ const DatenTable = () => {
   return (
     <Fragment>
       <Card>
-        <Row className="justify-content-between mx-0">
+        <Row className="justify-content-between align-items-center mx-0 mb-2">
+          <Col>
+            <CardTitle className="mb-0">Files</CardTitle>
+          </Col>
           <Col
             className="d-flex align-items-center justify-content-end mt-1"
-            md="3"
+            md="4"
             sm="12"
           >
-            <Label className="me-1" for="search-input">
-              Search
-            </Label>
-            <Input
-              className="dataTable-filter mb-50"
-              type="text"
-              bsSize="sm"
-              id="search-input"
-              value={searchValue}
-              onChange={handleFilter}
-            />
+            <InputGroup>
+              <InputGroupText>
+                <Search size={15} />
+              </InputGroupText>
+              <Input
+                className="dataTable-filter"
+                type="text"
+                bsSize="sm"
+                id="search-input"
+                value={searchValue}
+                onChange={handleFilter}
+              />
+              <UncontrolledButtonDropdown>
+                <DropdownToggle color="secondary" caret outline>
+                  <Filter size={15} />
+                  {/* <span className="align-middle ms-50">Export</span> */}
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem className="w-100">
+                    <Image size={15} />
+                    <span className="align-middle ms-50">Image</span>
+                  </DropdownItem>
+                  <DropdownItem className="w-100">
+                    <Video size={15} />
+                    <span className="align-middle ms-50">Video</span>
+                  </DropdownItem>
+                  <DropdownItem className="w-100">
+                    <Music size={15} />
+                    <span className="align-middle ms-50">Audio</span>
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledButtonDropdown>
+            </InputGroup>
           </Col>
         </Row>
         <div className="react-dataTable react-dataTable-selectable-rows">
@@ -213,11 +268,14 @@ const DatenTable = () => {
           />
         </div>
       </Card>
-      {selectedRowToEdit && <EditDaten
-        open={modal}
-        handleModal={handleModal}
-        data={selectedRowToEdit}
-      />}
+      {selectedRowToEdit && (
+        <EditDaten
+          open={modal}
+          handleModal={handleModal}
+          data={selectedRowToEdit}
+        />
+      )}
+      <DeleteDaten open={deleteModal} handleModal={handleDeleteModal} />
     </Fragment>
   );
 };
