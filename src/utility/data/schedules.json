@@ -1,12 +1,22 @@
 [
   {
-    "title": "List 1",
+    "title": "Match No 1",
     "round": "Round 2",
     "opponent": "Basil",
     "startTime": "08:20:00 PM",
     "schedule": [
       {
         "id": "1",
+        "type": "file",
+        "mediaType": "Moderator",
+        "media": "Video",
+        "startTime": "18:15:00",
+        "duration": "00:10:00",
+        "name": "Signal für  im Umgang aufschalten",
+        "comment": "Test"
+      },
+      {
+        "id": "2",
         "type": "group",
         "startTime": "18:15:00",
         "duration": "00:10:00",
@@ -14,102 +24,100 @@
         "comment": "Test",
         "children": [
           {
-            "id": "1.1",
-            "mediaType": "Playlist",
-            "media": "Image",
+            "id": "2.1",
+            "type": "file",
+            "mediaType": "Moderator",
+            "media": "Video",
             "startTime": "18:15:00",
             "duration": "00:10:00",
-            "name": "Signal für Bildschirme im  aufschalten",
-            "comment": "Test"
+            "name": "Signal für  im Umgang aufschalten",
+            "comment": "Test",
+            "audio": "Can be a file/filename"
           },
           {
-            "id": "1.2",
-            "mediaType": "Playlist",
-            "media": "Image",
+            "id": "2.2",
+            "type": "text",
+            "mediaType": "Moderator",
+            "media": "TV",
             "startTime": "18:15:00",
             "duration": "00:10:00",
-            "name": "Signal für Bildschirme im Umgang ",
-            "comment": "Test"
+            "name": "Signal für  im Umgang aufschalten",
+            "comment": "Test",
+            "audio": ""
           }
         ]
-      },
-
-      {
-        "id": "2",
-        "type": "file",
-        "mediaType": "Moderator",
-        "media": "Video",
-        "startTime": "18:15:00",
-        "duration": "00:10:00",
-        "name": "Signal für  im Umgang aufschalten",
-        "comment": "Test"
       },
       {
         "id": "3",
         "type": "text",
         "mediaType": "Moderator",
-        "media": "Video",
+        "media": "TV",
         "startTime": "18:15:00",
         "duration": "00:10:00",
         "name": "Signal für  im Umgang aufschalten",
-        "comment": "Test"
+        "comment": "Test",
+        "audio": ""
       }
     ]
   },
   {
-    "title": "List 2",
+    "title": "Match No 2",
     "round": "Round 4",
     "opponent": "Basil",
     "startTime": "08:20:00 PM",
     "schedule": [
       {
         "id": "1",
-        "type": "group",
-        "startTime": "18:15:00",
-        "duration": "00:10:00",
-        "name": "Teasdasd2 ",
-        "comment": "Test",
-        "children": [
-          {
-            "id": "1.1",
-            "mediaType": "Playlist",
-            "media": "Image",
-            "startTime": "18:15:00",
-            "duration": "00:10:00",
-            "name": "asdasdasd",
-            "comment": "Test"
-          },
-          {
-            "id": "1.2",
-            "mediaType": "Playlist",
-            "media": "Image",
-            "startTime": "18:15:00",
-            "duration": "00:10:00",
-            "name": "Signal fasdasd",
-            "comment": "Test"
-          }
-        ]
-      },
-
-      {
-        "id": "2",
         "type": "file",
         "mediaType": "Moderator",
         "media": "Video",
         "startTime": "18:15:00",
         "duration": "00:10:00",
-        "name": "Signal für asdasdasd im Umgang aufschalten",
+        "name": "Signal für  im Umgang aufschalten",
         "comment": "Test"
+      },
+      {
+        "id": "2",
+        "type": "group",
+        "startTime": "18:15:00",
+        "duration": "00:10:00",
+        "name": "Signal für Bildschirme im Umgang aufschalten",
+        "comment": "Test",
+        "children": [
+          {
+            "id": "2.1",
+            "type": "file",
+            "mediaType": "Moderator",
+            "media": "Video",
+            "startTime": "18:15:00",
+            "duration": "00:10:00",
+            "name": "Signal für  im Umgang aufschalten",
+            "comment": "Test",
+            "audio": "Can be a file/filename"
+          },
+          {
+            "id": "2.2",
+            "type": "text",
+            "mediaType": "Moderator",
+            "media": "TV",
+            "startTime": "18:15:00",
+            "duration": "00:10:00",
+            "name": "Signal für  im Umgang aufschalten",
+            "comment": "Test",
+            "audio": ""
+          }
+        ]
       },
       {
         "id": "3",
         "type": "text",
         "mediaType": "Moderator",
-        "media": "Video",
+        "media": "TV",
         "startTime": "18:15:00",
         "duration": "00:10:00",
-        "name": "Signal fürasda  im Umgang aufschalten",
-        "comment": "Test"
+        "name": "Signal für  im Umgang aufschalten",
+        "comment": "Test",
+        "audio": ""
       }
     ]
   }

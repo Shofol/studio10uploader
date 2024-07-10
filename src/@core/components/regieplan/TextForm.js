@@ -1,5 +1,8 @@
 // ** Reactstrap Imports
+import Cleave from 'cleave.js/react';
 import { X } from "react-feather";
+import { Controller, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import {
   Button,
   Col,
@@ -14,7 +17,38 @@ import {
 
 // ** Utils
 
-const TextForm = ({ open, handleModal, data }) => {
+const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
+  const options = { time: true, timePattern: ["h", "m", "s"] };
+
+  const initialValues = {
+    id: data ? data.id : "",
+    type: "text",
+    mediaType: data ? data.mediaType : "",
+    media: data ? data.media : "",
+    duration: data ? data.duration : "",
+    comment: data ? data.comment : "",
+    startTime: data ? data.startTime : "",
+    name: data ? data.name : "",
+    audio: data ? data.audio : ""
+  };
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors }
+  } = useForm({
+    defaultValues: initialValues
+  });
+
+  const onSubmit = (data) => {
+    console.log(errors);
+    console.log(JSON.stringify(data));
+    onFormSubmit(data);
+    toast.success("New Entry Created Successfully.");
+    handleModal();
+    reset(initialValues);
+  };
+
   const CloseBtn = (
     <X className="cursor-pointer ms-auto" size={15} onClick={handleModal} />
   );
@@ -35,65 +69,90 @@ const TextForm = ({ open, handleModal, data }) => {
         <h5 className="modal-title">Textposition Entry</h5>
       </ModalHeader>
       <ModalBody className="flex-grow-1">
-        <Form>
+        <Form onSubmit={handleSubmit(onSubmit)}>
           <Row>
+            <Col sm="12" className="mb-1">
+              <Label className="form-label" for="name">
+                Titel
+              </Label>
+              <Controller
+                name="name"
+                type="text"
+                control={control}
+                render={({ field }) => <Input {...field} placeholder="Titel" />}
+              />
+            </Col>
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="duration">
                 Bild
               </Label>
-              <Input type="select" name="select" id="select-basic">
-                <option>Select a value</option>
-                <option>Willkommens Screen</option>
-                <option>Kameras/Live</option>
-                <option>TV</option>
-              </Input>
+              <Controller
+                name="media"
+                control={control}
+                render={({ field }) => (
+                  <Input {...field} type="select">
+                    <option>Select a value</option>
+                    <option>Willkommens Screen</option>
+                    <option>Kameras/Live</option>
+                    <option>TV</option>
+                  </Input>
+                )}
+              />
             </Col>
 
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="duration">
                 Ton
               </Label>
-              <Input type="select" name="select" id="select-basic">
-              <option>Select a value</option>
-                <option>Playlist</option>
-                <option>Moderator</option>
-                <option>Speaker</option>
-                <option>Audio File</option>
-              </Input>
+              <Controller
+                name="mediaType"
+                control={control}
+                render={({ field }) => (
+                  <Input {...field} type="select">
+                    <option>Select a value</option>
+                    <option>Playlist</option>
+                    <option>Moderator</option>
+                    <option>Speaker</option>
+                    <option>Audio File</option>
+                  </Input>
+                )}
+              />
             </Col>
 
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="duration">
                 Dauer
               </Label>
-              <Input
-                type="time"
-                step={1}
+              <Controller
                 name="duration"
-                id="duration"
-                placeholder="duration"
-                className="h4"
+                control={control}
+                render={({ field }) => (
+                  <Cleave
+                    {...field}
+                    className="form-control"
+                    placeholder="12:00:00"
+                    options={options}
+                    id="time"
+                  />
+                )}
               />
             </Col>
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="comment">
                 Komentar
               </Label>
-              <Input
-                type="text"
+              <Controller
                 name="comment"
-                id="comment"
-                placeholder="Komentar"
+                type="text"
+                control={control}
+                render={({ field }) => (
+                  <Input {...field} type="text" placeholder="Komentar" />
+                )}
               />
             </Col>
             <Col sm="12">
               <div className="d-flex justify-content-end mt-1">
-                <Button
-                  className="me-1"
-                  color="primary"
-                  type="submit"
-                  onClick={(e) => e.preventDefault()}
-                >
+                <Button className="me-1" color="primary" type="submit">
                   Hinzufügen
                 </Button>
                 <Button outline color="secondary" type="reset">

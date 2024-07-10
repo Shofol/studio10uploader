@@ -1,20 +1,50 @@
 // ** Reactstrap Imports
 import { X } from "react-feather";
+import { Controller, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import {
-    Button,
-    Col,
-    Form,
-    Input,
-    Label,
-    Modal,
-    ModalBody,
-    ModalHeader,
-    Row
+  Button,
+  Col,
+  Form,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Row
 } from "reactstrap";
 
 // ** Utils
 
-const GroupForm = ({ open, handleModal, data }) => {
+const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
+  const initialValues = {
+    id: data ? data.id : "",
+    type: "group",
+    name: data ? data.name : "",
+    media: data ? data.media : "",
+    duration: data ? data.duration : "",
+    comment: data ? data.comment : "",
+    startTime: data ? data.startTime : "",
+    children: data ? data.children : []
+  };
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors }
+  } = useForm({
+    defaultValues: initialValues
+  });
+
+  const onSubmit = (data) => {
+    console.log(errors);
+    console.log(JSON.stringify(data));
+    onFormSubmit(data);
+    toast.success("New Entry Added Successfully.");
+    reset(initialValues);
+    handleModal();
+  };
+
   const CloseBtn = (
     <X className="cursor-pointer ms-auto" size={15} onClick={handleModal} />
   );
@@ -35,33 +65,35 @@ const GroupForm = ({ open, handleModal, data }) => {
         <h5 className="modal-title">Sammelposition Entry</h5>
       </ModalHeader>
       <ModalBody className="flex-grow-1">
-        <Form>
+        <Form onSubmit={handleSubmit(onSubmit)}>
           <Row>
             <Col sm="12" className="mb-1">
-              <Label className="form-label" for="title">
+              <Label className="form-label" for="name">
                 Titel
               </Label>
-              <Input type="text" name="title" id="title" placeholder="Titel" />
+              <Controller
+                name="name"
+                type="text"
+                control={control}
+                render={({ field }) => <Input {...field} placeholder="Titel" />}
+              />
             </Col>
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="comment">
                 Komentar
               </Label>
-              <Input
-                type="text"
+              <Controller
                 name="comment"
-                id="comment"
-                placeholder="Komentar"
+                type="text"
+                control={control}
+                render={({ field }) => (
+                  <Input {...field} placeholder="Komentar" />
+                )}
               />
             </Col>
             <Col sm="12">
               <div className="d-flex justify-content-end mt-1">
-                <Button
-                  className="me-1"
-                  color="primary"
-                  type="submit"
-                  onClick={(e) => e.preventDefault()}
-                >
+                <Button className="me-1" color="primary" type="submit">
                   Hinzufügen
                 </Button>
                 <Button outline color="secondary" type="reset">

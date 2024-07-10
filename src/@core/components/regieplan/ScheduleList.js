@@ -1,14 +1,19 @@
 // ** React Imports
-import { useRef, useState } from "react";
-import { Copy, Edit, Trash } from "react-feather";
+import { useEffect, useRef, useState } from "react";
+import { Copy, Edit, File, Trash } from "react-feather";
 
 // ** Reactstrap Imports
 import { Button, Table } from "reactstrap";
 
-const ScheduleList = () => {
+const ScheduleList = ({ data }) => {
   const [listArr, setListArr] = useState([]);
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
+
+  useEffect(() => {
+    setListArr(data);
+  }, [data])
+  
 
   const swap = (array) => {
     const tempArray = [...array];
@@ -17,6 +22,7 @@ const ScheduleList = () => {
     tempArray[dragOverItem.current] = temp;
     return tempArray;
   };
+
 
   const handleSort = () => {
     setListArr(swap(listArr));
@@ -46,127 +52,138 @@ const ScheduleList = () => {
         </tr>
       </thead>
       <tbody>
-        {listArr.map((item, index) => {
-          return (
-            <>
-              <tr
-                key={item.id}
-                draggable
-                onDragStart={() => (dragItem.current = index)}
-                onDragEnter={() => (dragOverItem.current = index)}
-                onDragEnd={handleSort}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                }}
-              >
-                <td style={{ width: "100px" }} className="bg-light">
-                  {item.id}
-                </td>
-                <td style={{ width: "100px" }} className="bg-light">
-                  {item.mediaType}
-                </td>
-                <td style={{ width: "100px" }} className="bg-light">
-                  {item.media}
-                </td>
-                <td style={{ width: "100px" }} className="bg-light">
-                  {item.startTime}
-                </td>
-                <td style={{ width: "100px" }} className="bg-light">
-                  {item.duration}
-                </td>
-                <td style={{ width: "400px" }} className="bg-light">
-                  {item.name}
-                </td>
-                <td style={{ width: "300px" }} className="bg-light">
-                  {item.comment}
-                </td>
+        {listArr.length > 0 &&
+          listArr.map((item, index) => {
+            return (
+              <>
+                <tr
+                  key={item.id}
+                  draggable
+                  onDragStart={() => (dragItem.current = index)}
+                  onDragEnter={() => (dragOverItem.current = index)}
+                  onDragEnd={handleSort}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  <td style={{ width: "100px" }} className="bg-light">
+                    {index + 1}
+                  </td>
+                  <td style={{ width: "100px" }} className="bg-light">
+                    {item.mediaType}
+                  </td>
+                  <td style={{ width: "100px" }} className="bg-light">
+                    {item.media}
+                  </td>
+                  <td style={{ width: "100px" }} className="bg-light">
+                    {item.startTime}
+                  </td>
+                  <td style={{ width: "100px" }} className="bg-light">
+                    {item.duration}
+                  </td>
+                  <td style={{ width: "400px" }} className="bg-light">
+                    {item.name}
+                  </td>
+                  <td style={{ width: "300px" }} className="bg-light">
+                    {item.comment}
+                  </td>
 
-                <td id="section-to-hide" className="bg-light">
-                  <div className="d-flex gap-1">
-                    <Button.Ripple
-                      className="btn-icon"
-                      size="sm"
-                      outline
-                      color="primary"
-                    >
-                      <Copy size={10} />
-                    </Button.Ripple>
-                    <Button.Ripple
-                      className="btn-icon"
-                      size="sm"
-                      outline
-                      color="primary"
-                    >
-                      <Edit size={10} />
-                    </Button.Ripple>
-                    <Button.Ripple
-                      className="btn-icon"
-                      size="sm"
-                      outline
-                      color="primary"
-                    >
-                      <Trash size={10} />
-                    </Button.Ripple>
-                  </div>
-                </td>
-              </tr>
-              {item.children &&
-                item.children.length > 0 &&
-                item.children.map((child, childIndex) => {
-                  return (
-                    <tr
-                      key={child.id}
-                      draggable
-                      onDragStart={() => (dragItem.current = childIndex)}
-                      onDragEnter={() => (dragOverItem.current = childIndex)}
-                      onDragEnd={() => handleChildSort(index, item.children)}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                      }}
-                    >
-                      <td style={{ width: "100px", paddingLeft: "36px" }}>
-                        {child.id}
-                      </td>
-                      <td style={{ width: "100px" }}>{child.mediaType}</td>
-                      <td style={{ width: "100px" }}>{child.media}</td>
-                      <td style={{ width: "100px" }}>{child.startTime}</td>
-                      <td style={{ width: "100px" }}>{child.duration}</td>
-                      <td style={{ width: "300px" }}>{child.name}</td>
-                      <td style={{ width: "300px" }}>{child.comment}</td>
-                      <td id="section-to-hide" className="bg-light">
-                        <div className="d-flex gap-1">
-                          <Button.Ripple
-                            className="btn-icon"
-                            size="sm"
-                            outline
-                            color="primary"
-                          >
-                            <Copy size={10} />
-                          </Button.Ripple>
-                          <Button.Ripple
-                            className="btn-icon"
-                            size="sm"
-                            outline
-                            color="primary"
-                          >
-                            <Edit size={10} />
-                          </Button.Ripple>
-                          <Button.Ripple
-                            className="btn-icon"
-                            size="sm"
-                            outline
-                            color="primary"
-                          >
-                            <Trash size={10} />
-                          </Button.Ripple>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-            </>
-          );
-        })}
+                  <td id="section-to-hide" className="bg-light">
+                    <div className="d-flex gap-1">
+                      {item.type === "group" && (
+                        <Button.Ripple
+                          className="btn-icon"
+                          size="sm"
+                          outline
+                          color="primary"
+                        >
+                          <File size={10} />
+                        </Button.Ripple>
+                      )}
+                      <Button.Ripple
+                        className="btn-icon"
+                        size="sm"
+                        outline
+                        color="primary"
+                      >
+                        <Copy size={10} />
+                      </Button.Ripple>
+                      <Button.Ripple
+                        className="btn-icon"
+                        size="sm"
+                        outline
+                        color="primary"
+                      >
+                        <Edit size={10} />
+                      </Button.Ripple>
+                      <Button.Ripple
+                        className="btn-icon"
+                        size="sm"
+                        outline
+                        color="primary"
+                      >
+                        <Trash size={10} />
+                      </Button.Ripple>
+                    </div>
+                  </td>
+                </tr>
+                {item.children &&
+                  item.children.length > 0 &&
+                  item.children.map((child, childIndex) => {
+                    return (
+                      <tr
+                        key={childIndex + 1}
+                        draggable
+                        onDragStart={() => (dragItem.current = childIndex)}
+                        onDragEnter={() => (dragOverItem.current = childIndex)}
+                        onDragEnd={() => handleChildSort(index, item.children)}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                        }}
+                      >
+                        <td style={{ width: "100px", paddingLeft: "36px" }}>
+                          {child.id}
+                        </td>
+                        <td style={{ width: "100px" }}>{child.mediaType}</td>
+                        <td style={{ width: "100px" }}>{child.media}</td>
+                        <td style={{ width: "100px" }}>{child.startTime}</td>
+                        <td style={{ width: "100px" }}>{child.duration}</td>
+                        <td style={{ width: "300px" }}>{child.name}</td>
+                        <td style={{ width: "300px" }}>{child.comment}</td>
+                        <td id="section-to-hide" className="bg-light">
+                          <div className="d-flex gap-1">
+                            <Button.Ripple
+                              className="btn-icon"
+                              size="sm"
+                              outline
+                              color="primary"
+                            >
+                              <Copy size={10} />
+                            </Button.Ripple>
+                            <Button.Ripple
+                              className="btn-icon"
+                              size="sm"
+                              outline
+                              color="primary"
+                            >
+                              <Edit size={10} />
+                            </Button.Ripple>
+                            <Button.Ripple
+                              className="btn-icon"
+                              size="sm"
+                              outline
+                              color="primary"
+                            >
+                              <Trash size={10} />
+                            </Button.Ripple>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </>
+            );
+          })}
       </tbody>
     </Table>
   );

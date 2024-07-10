@@ -16,7 +16,7 @@ import {
 
 // ** Utils
 
-const NewPlan = ({ open, handleModal, data }) => {
+const NewPlan = ({ open, handleModal, data, onFormSubmit }) => {
   const {
     handleSubmit,
     control,
@@ -26,13 +26,16 @@ const NewPlan = ({ open, handleModal, data }) => {
       title: data ? data.title : "",
       round: data ? data.round : "",
       opponent: data ? data.opponent : "",
-      startTime: data ? data.startTime : ""
+      startTime: data ? data.startTime : "",
+      schedule: data ? data.schedule : []
     }
   });
-  const onSubmit = (data) => { 
-    console.log(errors)
+  const onSubmit = (data) => {
+    console.log(errors);
     console.log(JSON.stringify(data));
-    toast.success('New Schedule Created Successfully.')
+    onFormSubmit(data);
+    toast.success("New Schedule Created Successfully.");
+    handleModal();
   };
 
   const CloseBtn = (
@@ -65,7 +68,7 @@ const NewPlan = ({ open, handleModal, data }) => {
                 name="title"
                 type="text"
                 control={control}
-                render={({ field }) => <Input {...field} placeholder="Titel"/>}
+                render={({ field }) => <Input {...field} placeholder="Titel" />}
               />
             </Col>
             <Col sm="12" className="mb-1">
@@ -112,23 +115,14 @@ const NewPlan = ({ open, handleModal, data }) => {
                 name="startTime"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    {...field}
-                    type="time"
-                    step={1}
-                    className="h4"
-                  />
+                  <Input {...field} type="time" step={1} className="h4" />
                 )}
               />
             </Col>
 
             <Col sm="12">
               <div className="d-flex justify-content-end mt-1">
-                <Button
-                  className="me-1"
-                  color="primary"
-                  type="submit"
-                >
+                <Button className="me-1" color="primary" type="submit">
                   Hinzufügen
                 </Button>
                 <Button outline color="secondary" type="reset">

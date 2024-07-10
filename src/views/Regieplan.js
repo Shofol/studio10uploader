@@ -1,3 +1,4 @@
+import { format, sub } from "date-fns";
 import { useState } from "react";
 import { Box, File, Folder, Printer, Save, Type } from "react-feather";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
@@ -12,10 +13,47 @@ const Regieplan = () => {
   const [entryMethod, setEntryMethod] = useState("text");
   const [modal, setModal] = useState(false);
   const [newPlan, setNewPlan] = useState(false);
-  const [schedules, setSchedules] = useState(Schedules)
+  const [schedules, setSchedules] = useState(Schedules);
+  const [currentSchedule, setCurrentSchedule] = useState(null);
 
   const handleModal = () => {
     setModal(!modal);
+  };
+
+
+  const updateStartTime = () => {
+    let currentStartTime = currentSchedule.startTime;
+    const tempArray = [...currentSchedule.schedule];
+    for (let i = tempArray.length - 1; i >= 0; i--) {
+      const [durationHours, durationMinutes, durationSeconds] =
+        tempArray[i].duration.split(":");
+      const entryStartTime = format(
+        sub(new Date(`12-01-2024 ${currentStartTime}`), {
+          hours: +durationHours,
+          minutes: +durationMinutes,
+          seconds: +durationSeconds
+        }),
+        "hh:mm:ss a"
+      );
+
+      // const entryEndTime = format(
+      //   add(new Date(`12-01-2024 ${currentStartTime}`), {
+      //     hours: +durationHours,
+      //     minutes: +durationMinutes,
+      //     seconds: +durationSeconds
+      //   }),
+      //   "HH:mm:ss"
+      // );
+
+      tempArray[i].startTime = entryStartTime;
+      currentStartTime = entryStartTime;
+    }
+    setSchedules(tempArray)
+  };
+
+  const handleNewEntry = (entry) => {
+    currentSchedule.schedule.push(entry);
+    updateStartTime();
   };
 
   return (
@@ -23,44 +61,46 @@ const Regieplan = () => {
       <CardHeader>{/* <CardTitle>🙌</CardTitle> */}</CardHeader>
       <CardBody>
         <div className="d-flex justify-content-between mb-2">
-          <div className="d-flex gap-1">
-            <Button.Ripple
-              onClick={() => {
-                handleModal();
-                setEntryMethod("file");
-              }}
-              size="sm"
-              color="primary"
-              outline
-            >
-              <File size={14} />
-              <span className="align-middle ms-25">File</span>
-            </Button.Ripple>
-            <Button.Ripple
-              onClick={() => {
-                handleModal();
-                setEntryMethod("group");
-              }}
-              size="sm"
-              color="primary"
-              outline
-            >
-              <Box size={14} />
-              <span className="align-middle ms-25">Sammelposition</span>
-            </Button.Ripple>
-            <Button.Ripple
-              onClick={() => {
-                handleModal();
-                setEntryMethod("text");
-              }}
-              size="sm"
-              color="primary"
-              outline
-            >
-              <Type size={14} />
-              <span className="align-middle ms-25">Textposition</span>
-            </Button.Ripple>
-          </div>
+          {currentSchedule && (
+            <div className="d-flex gap-1">
+              <Button.Ripple
+                onClick={() => {
+                  handleModal();
+                  setEntryMethod("file");
+                }}
+                size="sm"
+                color="primary"
+                outline
+              >
+                <File size={14} />
+                <span className="align-middle ms-25">File</span>
+              </Button.Ripple>
+              <Button.Ripple
+                onClick={() => {
+                  handleModal();
+                  setEntryMethod("group");
+                }}
+                size="sm"
+                color="primary"
+                outline
+              >
+                <Box size={14} />
+                <span className="align-middle ms-25">Sammelposition</span>
+              </Button.Ripple>
+              <Button.Ripple
+                onClick={() => {
+                  handleModal();
+                  setEntryMethod("text");
+                }}
+                size="sm"
+                color="primary"
+                outline
+              >
+                <Type size={14} />
+                <span className="align-middle ms-25">Textposition</span>
+              </Button.Ripple>
+            </div>
+          )}
           <div className="d-flex gap-1 flex-1">
             <Button.Ripple
               size="sm"
@@ -93,17 +133,61 @@ const Regieplan = () => {
             </Button.Ripple>
           </div>
         </div>
-        <ScheduleList />
+        {currentSchedule && (
+          <h4>
+            {currentSchedule.title} (Uhrzeit:{" "}
+            {format(
+              new Date(`12-01-2024 ${currentSchedule.startTime}`),
+              "hh:mm:ss a"
+            )}
+            )
+          </h4>
+        )}
+        {currentSchedule && currentSchedule.schedule.length > 0 && (
+          <>
+            <ScheduleList
+              data={schedules}
+            />
+          </>
+        )}
+        {(!currentSchedule || currentSchedule.schedule.length <= 0) && (
+          <Card className="d-flex">
+            <CardHeader className="border my-2">
+              <h4 className="mx-auto py-2">Create some magic today! 🙌</h4>
+            </CardHeader>
+          </Card>
+        )}
         {entryMethod === "file" && (
-          <FileForm open={modal} handleModal={handleModal} />
+          <FileForm
+            open={modal}
+            handleModal={handleModal}
+            onFormSubmit={handleNewEntry}
+          />
         )}
         {entryMethod === "group" && (
-          <GroupForm open={modal} handleModal={handleModal} />
+          <GroupForm
+            open={modal}
+            handleModal={handleModal}
+            onFormSubmit={handleNewEntry}
+          />
         )}
         {entryMethod === "text" && (
-          <TextForm open={modal} handleModal={handleModal} />
+          <TextForm
+            open={modal}
+            handleModal={handleModal}
+            onFormSubmit={handleNewEntry}
+          />
         )}
-        {newPlan && <NewPlan open={modal} handleModal={handleModal} />}
+        {newPlan && (
+          <NewPlan
+            open={modal}
+            handleModal={handleModal}
+            onFormSubmit={(plan) => {
+              setCurrentSchedule(plan);
+              setNewPlan(false);
+            }}
+          />
+        )}
       </CardBody>
     </Card>
   );
