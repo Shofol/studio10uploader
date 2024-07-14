@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, forwardRef, useState } from "react";
+import { Fragment, forwardRef, useEffect, useState } from "react";
 
 // ** Add New Modal Component
 
@@ -32,7 +32,7 @@ import {
   UncontrolledButtonDropdown
 } from "reactstrap";
 
-import data from "../../../utility/data/files";
+import api from "../../api/api";
 import DeleteDaten from "./DeleteDaten";
 import EditDaten from "./EditDaten";
 
@@ -51,6 +51,21 @@ const DatenTable = () => {
   const [searchValue, setSearchValue] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [selectedRowToEdit, setSelectedRowToEdit] = useState(null);
+  const [data, setData] = useState([])
+
+  const fetchData = async () => {
+    const result = await api.post("file/lists", {
+      start: 0,
+      end: 1,
+      per_page: 10
+    });
+    console.log(result);
+    setData(result.data.data);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   // ** Function to handle Modal toggle
   const handleModal = () => {
@@ -68,12 +83,12 @@ const DatenTable = () => {
     {
       name: "Name",
       minWidth: "250px",
-      sortable: (row) => row.fileName,
+      sortable: (row) => row.title,
       cell: (row) => (
         <div className="d-flex align-items-center">
           <div className="user-info text-truncate">
             <span className="d-block fw-bold text-truncate">
-              {row.fileName}
+              {row.title}
             </span>
           </div>
         </div>
@@ -82,18 +97,18 @@ const DatenTable = () => {
     {
       name: "Dauer",
       sortable: true,
-      selector: (row) => row.duration
+      selector: (row) => row.file_duration
     },
     {
       name: "File Type",
       sortable: true,
-      selector: (row) => row.fileType
+      selector: (row) => row.file_type
     },
 
     {
       name: "File size",
       sortable: true,
-      selector: (row) => `Size: ${row.fileSize} mb`
+      selector: (row) => `Size: ${row.file_size} mb`
     },
     {
       name: "Actions",

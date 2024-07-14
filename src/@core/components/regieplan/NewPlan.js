@@ -13,6 +13,8 @@ import {
   ModalHeader,
   Row
 } from "reactstrap";
+import Rounds from "../../../utility/data/rounds.json";
+import Teams from "../../../utility/data/teams.json";
 
 // ** Utils
 
@@ -80,9 +82,10 @@ const NewPlan = ({ open, handleModal, data, onFormSubmit }) => {
                 control={control}
                 render={({ field }) => (
                   <Input type="select" {...field}>
-                    <option>Select a value</option>
-                    <option>Runde 1</option>
-                    <option>Runde 2</option>
+                    <option value={null}>Select a value</option>
+                    {Rounds.map((round) => {
+                      return <option value={round.value}>{round.label}</option>;
+                    })}
                   </Input>
                 )}
               />
@@ -99,9 +102,9 @@ const NewPlan = ({ open, handleModal, data, onFormSubmit }) => {
                 render={({ field }) => (
                   <Input type="select" {...field}>
                     <option>Select a value</option>
-                    <option>FC Basel 1893</option>
-                    <option>BSC Young Boys</option>
-                    <option>Grasshopper Club Zürich</option>
+                    {Teams.map((team) => {
+                      return <option value={team.value}>{team.label}</option>;
+                    })}
                   </Input>
                 )}
               />

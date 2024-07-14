@@ -35,16 +35,6 @@ const Regieplan = () => {
         }),
         "hh:mm:ss a"
       );
-
-      // const entryEndTime = format(
-      //   add(new Date(`12-01-2024 ${currentStartTime}`), {
-      //     hours: +durationHours,
-      //     minutes: +durationMinutes,
-      //     seconds: +durationSeconds
-      //   }),
-      //   "HH:mm:ss"
-      // );
-
       tempArray[i].startTime = entryStartTime;
       currentStartTime = entryStartTime;
     }

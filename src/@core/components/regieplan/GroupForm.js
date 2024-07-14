@@ -22,7 +22,7 @@ const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
     type: "group",
     name: data ? data.name : "",
     media: data ? data.media : "",
-    duration: data ? data.duration : "",
+    duration: data ? data.duration : "00:00:00",
     comment: data ? data.comment : "",
     startTime: data ? data.startTime : "",
     children: data ? data.children : []
@@ -37,8 +37,6 @@ const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
   });
 
   const onSubmit = (data) => {
-    console.log(errors);
-    console.log(JSON.stringify(data));
     onFormSubmit(data);
     toast.success("New Entry Added Successfully.");
     reset(initialValues);
