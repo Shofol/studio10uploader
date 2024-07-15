@@ -1,14 +1,17 @@
 import "@styles/react/libs/file-uploader/file-uploader.scss";
-import axios from "axios";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Card, CardBody, Progress } from "reactstrap";
 import api from "../@core/api/api";
 import DatenTable from "../@core/components/daten/DatenTable";
 import FileUploaderSingle from "../@core/components/form-elements/file-uploader/FileUploaderSingle";
+import { formatSeconds } from "../utility/functions/formatTime";
 
 const Daten = () => {
   const [progress, setProgress] = useState(0);
+  const tableRef = useRef(null);
+  const videoRef = useRef(null);
+  const audioRef = useRef(null);
 
   const toBase64 = (file) => new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -17,34 +20,7 @@ const Daten = () => {
       reader.onerror = reject;
     });
 
-  const handleUpload = async (file, size) => {
-    // const base64File = await toBase64(file);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await axios.post("http://localhost:5500/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      });
-
-      console.log("File Uploaded Successfully");
-    } catch (err) {
-      console.error("Error uploading file");
-    }
-
-    return;
-
-    const data = {
-      title: file.name,
-      file_name: base64File,
-      file_type: file.type,
-      file_size: size,
-      file_duration: "10s"
-    };
-
+  const submit = async (data) => {
     const config = {
       onUploadProgress: (progressEvent) => {
         const percentCompleted = Math.floor(
@@ -56,27 +32,49 @@ const Daten = () => {
     try {
       const result = await api.post("file/store", data, config);
       toast.success("File(s) uploaded successfully.", { className: "py-2" });
-      console.log(result);
+      tableRef.current.updateData();
       setProgress(0);
     } catch (error) {
       console.log(error);
       setProgress(0);
     }
+  };
 
-    // setProgress(1);
-    // setTimeout(() => {
-    //   setProgress(100);
-    //   setTimeout(() => {
-    //     setProgress(0);
-    //     toast.success('File(s) uploaded successfully.', {className: 'py-2'})
-    //   }, 1000);
-    // }, 100);
+  const handleData = (file, size, duration) => {
+    const data = {
+      title: file.name,
+      file_name: file.name,
+      file_type: file.type,
+      file_size: size,
+      file_duration: duration
+    };
+    submit(data);
+  };
+
+  const handleUpload = async (file, size) => {
+    let fileDuration = "00:00:10";
+    let mediaRef = null;
+    if (file.type.includes("video") || file.type.includes("audio")) {
+      const fileURL = URL.createObjectURL(file);
+      mediaRef = file.type.includes("video") ? videoRef : audioRef;
+      mediaRef.current.src = fileURL;
+      mediaRef.current.onloadedmetadata = function () {
+        const duration = formatSeconds(mediaRef.current.duration);
+        fileDuration = duration;
+        handleData(file, size, fileDuration);
+      };
+    } else {
+      handleData(file, size, fileDuration);
+    }
   };
 
   return (
     <div>
       <Card>
         <CardBody>
+          <video ref={videoRef} className="d-none" />
+          <audio ref={audioRef} className="d-none" />
+
           <FileUploaderSingle
             showTitle={true}
             showUploadButton={true}
@@ -94,7 +92,7 @@ const Daten = () => {
 
       <Card>
         <CardBody>
-          <DatenTable />
+          <DatenTable ref={tableRef} />
         </CardBody>
       </Card>
     </div>

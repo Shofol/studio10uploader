@@ -1,5 +1,5 @@
 // ** Reactstrap Imports
-import Cleave from 'cleave.js/react';
+import Cleave from "cleave.js/react";
 import { X } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -79,16 +79,20 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
                 name="name"
                 type="text"
                 control={control}
+                rules={{ required: true }}
                 render={({ field }) => <Input {...field} placeholder="Titel" />}
               />
             </Col>
+            {errors.name && <p className="text-danger">This is required.</p>}
+
             <Col sm="12" className="mb-1">
-              <Label className="form-label" for="duration">
+              <Label className="form-label" for="media">
                 Bild
               </Label>
               <Controller
                 name="media"
                 control={control}
+                rules={{ required: true }}
                 render={({ field }) => (
                   <Input {...field} type="select">
                     <option>Select a value</option>
@@ -99,6 +103,7 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
                 )}
               />
             </Col>
+            {errors.media && <p className="text-danger">This is required.</p>}
 
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="duration">
@@ -107,17 +112,20 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
               <Controller
                 name="mediaType"
                 control={control}
+                rules={{ required: true }}
                 render={({ field }) => (
                   <Input {...field} type="select">
-                    <option>Select a value</option>
-                    <option>Playlist</option>
-                    <option>Moderator</option>
-                    <option>Speaker</option>
-                    <option>Audio File</option>
+                    <option value={null}>Select a value</option>
+                    <option value={"playlist"}>Playlist</option>
+                    <option value={"moderator"}>Moderator</option>
+                    <option value={"speaker"}>Speaker</option>
+                    <option value={"audio"}>Audio File</option>
                   </Input>
                 )}
               />
             </Col>
+            {errors.mediaType && <p className="text-danger">This is required.</p>}
+            
 
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="duration">
@@ -126,6 +134,7 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
               <Controller
                 name="duration"
                 control={control}
+                rules={{ required: true }}
                 render={({ field }) => (
                   <Cleave
                     {...field}
@@ -137,6 +146,9 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
                 )}
               />
             </Col>
+            {errors.duration && <p className="text-danger">This is required.</p>}
+
+
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="comment">
                 Komentar
@@ -144,12 +156,16 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
               <Controller
                 name="comment"
                 type="text"
+                rules={{ required: true }}
                 control={control}
                 render={({ field }) => (
                   <Input {...field} type="text" placeholder="Komentar" />
                 )}
               />
             </Col>
+            {errors.comment && <p className="text-danger">This is required.</p>}
+
+
             <Col sm="12">
               <div className="d-flex justify-content-end mt-1">
                 <Button className="me-1" color="primary" type="submit">

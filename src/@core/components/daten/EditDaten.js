@@ -18,23 +18,37 @@ import {
 
 // ** Styles
 import "@styles/react/libs/flatpickr/flatpickr.scss";
+import Cleave from "cleave.js/react";
+import toast from "react-hot-toast";
+import api from "../../api/api";
 
 const EditDaten = ({ open, handleModal, data }) => {
-  // const [Picker, setPicker] = useState(new Date());
+  const options = { time: true, timePattern: ["h", "m", "s"] };
 
   const {
     handleSubmit,
     control,
-    formState: { errors }
+    formState: { errors },
+    getValues
   } = useForm({
     defaultValues: {
-      fileName: data ? data.fileName : "",
-      duration: data ? data.duration : "",
-      fileSize: data ? data.fileSize : "",
-      fileType: data ? data.fileType : ""
+      id: data ? data.id : "",
+      file_name: data ? data.file_name : "",
+      file_duration: data ? data.file_duration : "",
+      file_size: data ? data.file_size : "",
+      file_type: data ? data.file_type : ""
     }
   });
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = async (data) => {
+    try {
+      const result = await api.put(`file/${data.id}`, getValues());
+      toast.success("File(s) updated successfully.", { className: "py-2" });
+      handleModal();
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const CloseBtn = (
     <X className="cursor-pointer ms-auto" size={15} onClick={handleModal} />
@@ -59,7 +73,7 @@ const EditDaten = ({ open, handleModal, data }) => {
       <ModalBody className="flex-grow-1">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-1">
-            <Label className="form-label" for="fileName">
+            <Label className="form-label" for="file_name">
               File Name
             </Label>
             <InputGroup>
@@ -67,14 +81,14 @@ const EditDaten = ({ open, handleModal, data }) => {
                 <File size={15} />
               </InputGroupText>
               <Controller
-                name="fileName"
+                name="file_name"
                 control={control}
                 render={({ field }) => <Input {...field} />}
               />
             </InputGroup>
           </div>
           <div className="mb-1">
-            <Label className="form-label" for="duration">
+            <Label className="form-label" for="file_duration">
               Dauer
             </Label>
             <InputGroup>
@@ -82,14 +96,22 @@ const EditDaten = ({ open, handleModal, data }) => {
                 <Clock size={15} />
               </InputGroupText>
               <Controller
-                name="duration"
+                name="file_duration"
                 control={control}
-                render={({ field }) => <Input {...field} />}
+                render={({ field }) => (
+                  <Cleave
+                    {...field}
+                    className="form-control"
+                    placeholder="12:00:00"
+                    options={options}
+                    id="time"
+                  />
+                )}
               />
             </InputGroup>
           </div>
           <div className="mb-1">
-            <Label className="form-label" for="fileType">
+            <Label className="form-label" for="file_type">
               File Type
             </Label>
             <InputGroup>
@@ -97,7 +119,7 @@ const EditDaten = ({ open, handleModal, data }) => {
                 <Image size={15} />
               </InputGroupText>
               <Controller
-                name="fileType"
+                name="file_type"
                 disabled
                 control={control}
                 render={({ field }) => <Input {...field} />}
@@ -105,7 +127,7 @@ const EditDaten = ({ open, handleModal, data }) => {
             </InputGroup>
           </div>
           <div className="mb-1">
-            <Label className="form-label" for="fileSize">
+            <Label className="form-label" for="file_size">
               File Size
             </Label>
             <InputGroup>
@@ -113,13 +135,11 @@ const EditDaten = ({ open, handleModal, data }) => {
                 <Database size={15} />
               </InputGroupText>
               <Controller
-                name="fileSize"
+                name="file_size"
                 disabled
                 control={control}
                 render={({ field }) => <Input {...field} />}
               />
-
-              {/* <Flatpickr className='form-control' id="fileSize" value={Picker} onChange={date => setPicker(date)} /> */}
             </InputGroup>
           </div>
 

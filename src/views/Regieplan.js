@@ -1,5 +1,5 @@
-import { format, sub } from "date-fns";
-import { useState } from "react";
+import { format } from "date-fns";
+import { useRef, useState } from "react";
 import { Box, File, Folder, Printer, Save, Type } from "react-feather";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
 import FileForm from "../@core/components/regieplan/FileForm";
@@ -7,43 +7,26 @@ import GroupForm from "../@core/components/regieplan/GroupForm";
 import NewPlan from "../@core/components/regieplan/NewPlan";
 import ScheduleList from "../@core/components/regieplan/ScheduleList";
 import TextForm from "../@core/components/regieplan/TextForm";
-import Schedules from "../utility/data/schedules.json";
 
 const Regieplan = () => {
-  const [entryMethod, setEntryMethod] = useState("text");
+  const [entryMethod, setEntryMethod] = useState();
   const [modal, setModal] = useState(false);
   const [newPlan, setNewPlan] = useState(false);
-  const [schedules, setSchedules] = useState(Schedules);
+  // const [schedules, setSchedules] = useState(Schedules);
   const [currentSchedule, setCurrentSchedule] = useState(null);
+  // const [newEntry, setNewEntry] = useState(null);
+  const listRef = useRef(null);
 
   const handleModal = () => {
     setModal(!modal);
   };
 
-
-  const updateStartTime = () => {
-    let currentStartTime = currentSchedule.startTime;
-    const tempArray = [...currentSchedule.schedule];
-    for (let i = tempArray.length - 1; i >= 0; i--) {
-      const [durationHours, durationMinutes, durationSeconds] =
-        tempArray[i].duration.split(":");
-      const entryStartTime = format(
-        sub(new Date(`12-01-2024 ${currentStartTime}`), {
-          hours: +durationHours,
-          minutes: +durationMinutes,
-          seconds: +durationSeconds
-        }),
-        "hh:mm:ss a"
-      );
-      tempArray[i].startTime = entryStartTime;
-      currentStartTime = entryStartTime;
-    }
-    setSchedules(tempArray)
+  const handleNewEntry = (entry) => {
+    listRef.current.handleEntry(entry);
   };
 
-  const handleNewEntry = (entry) => {
-    currentSchedule.schedule.push(entry);
-    updateStartTime();
+  const handleSave = () => {
+    listRef.current.handleSave();
   };
 
   return (
@@ -107,7 +90,13 @@ const Regieplan = () => {
               <Folder size={14} />
               <span className="align-middle ms-25">Open</span>
             </Button.Ripple>
-            <Button.Ripple size="sm" outline>
+            <Button.Ripple
+              size="sm"
+              outline
+              onClick={() => {
+                handleSave();
+              }}
+            >
               <Save size={14} />
               <span className="align-middle ms-25">Save</span>
             </Button.Ripple>
@@ -133,14 +122,12 @@ const Regieplan = () => {
             )
           </h4>
         )}
-        {currentSchedule && currentSchedule.schedule.length > 0 && (
+        {currentSchedule && (
           <>
-            <ScheduleList
-              data={schedules}
-            />
+            <ScheduleList ref={listRef} data={currentSchedule} />
           </>
         )}
-        {(!currentSchedule || currentSchedule.schedule.length <= 0) && (
+        {!currentSchedule && (
           <Card className="d-flex">
             <CardHeader className="border my-2">
               <h4 className="mx-auto py-2">Create some magic today! 🙌</h4>

@@ -21,36 +21,19 @@ import {
 
 // ** Utils
 import { selectThemeColors } from "@utils";
+import Cleave from "cleave.js/react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
+  const options = { time: true, timePattern: ["h", "m", "s"] };
+
   const initialValues = {
     mediaType: data ? data.mediaType : "",
     media: data ? data.media : "",
     duration: data ? data.duration : "",
-    comment: data ? data.comment : ""
-  };
-  const {
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors }
-  } = useForm({
-    defaultValues: initialValues
-  });
-
-  const onSubmit = (data) => {
-    console.log(errors);
-    console.log(JSON.stringify(data));
-    data.id = data.media.id;
-    data.name = data.media.label;
-    data.media = data.media.fileType;
-    data.type = "file";
-    onFormSubmit(data);
-    toast.success("New Entry Added Successfully.");
-    reset(initialValues);
-    handleModal();
+    comment: data ? data.comment : "",
+    audio: data ? data.audio : ""
   };
 
   const colorOptions = [
@@ -72,6 +55,30 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
       callback(filterColors1(inputValue));
     }, 2000);
   };
+
+  const {
+    handleSubmit,
+    control,
+    reset,
+    watch,
+    formState: { errors }
+  } = useForm({
+    defaultValues: initialValues
+  });
+
+  const watchAudioValue = watch("mediaType");
+
+  const onSubmit = (data) => {
+    data.id = data.media.id;
+    data.name = data.media.label;
+    data.media = data.media.fileType;
+    data.type = "file";
+    onFormSubmit(data);
+    toast.success("New Entry Added Successfully.");
+    reset(initialValues);
+    handleModal();
+  };
+
   const handleInputChange = (newValue) => {
     const val = newValue.replace(/\W/g, "");
     return val;
@@ -109,6 +116,9 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                 </InputGroupText>
                 <Controller
                   name="media"
+                  rules={{
+                    required: true
+                  }}
                   control={control}
                   render={({ field }) => (
                     <AsyncSelect
@@ -124,7 +134,6 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                     />
                   )}
                 />
-
                 <UncontrolledButtonDropdown>
                   <DropdownToggle color="secondary" caret outline>
                     <Filter size={15} />
@@ -146,6 +155,7 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                 </UncontrolledButtonDropdown>
               </InputGroup>
             </Col>
+            {errors.media && <p className="text-danger">This is required.</p>}
 
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="mediaType">
@@ -155,17 +165,57 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                 name="mediaType"
                 type="text"
                 control={control}
+                rules={{ required: true }}
                 render={({ field }) => (
                   <Input {...field} type="select">
-                    <option>Select a value</option>
-                    <option>Playlist</option>
-                    <option>Moderator</option>
-                    <option>Speaker</option>
-                    <option>Audio File</option>
+                    <option value={null}>Select a value</option>
+                    <option value={"playlist"}>Playlist</option>
+                    <option value={"moderator"}>Moderator</option>
+                    <option value={"speaker"}>Speaker</option>
+                    <option value={"audio"}>Audio File</option>
                   </Input>
                 )}
               />
             </Col>
+            {errors.mediaType && (
+              <p className="text-danger">This is required.</p>
+            )}
+
+            {watchAudioValue === "audio" && (
+              <>
+                <Col sm="12" className="mb-1">
+                  <Label className="form-label" for="audio">
+                    Audio File
+                  </Label>
+                  <InputGroup className="justify-content-between flex-nowrap">
+                    <InputGroupText>
+                      <Search size={15} />
+                    </InputGroupText>
+                    <Controller
+                      name="audio"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field }) => (
+                        <AsyncSelect
+                          {...field}
+                          isClearable={false}
+                          className="react-select w-100"
+                          classNamePrefix="select"
+                          name="callback-react-select"
+                          loadOptions={loadOptions}
+                          onInputChange={handleInputChange}
+                          defaultOptions
+                          theme={selectThemeColors}
+                        />
+                      )}
+                    />
+                  </InputGroup>
+                </Col>
+                {errors.audio && (
+                  <p className="text-danger">This is required.</p>
+                )}
+              </>
+            )}
 
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="duration">
@@ -174,17 +224,22 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
               <Controller
                 name="duration"
                 control={control}
+                rules={{ required: true }}
                 render={({ field }) => (
-                  <Input
+                  <Cleave
                     {...field}
-                    type="time"
-                    step={1}
-                    placeholder="Dauer"
-                    className="h4"
+                    className="form-control"
+                    placeholder="12:00:00"
+                    options={options}
+                    id="time"
                   />
                 )}
               />
             </Col>
+            {errors.duration && (
+              <p className="text-danger">This is required.</p>
+            )}
+
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="comment">
                 Komentar
@@ -192,12 +247,15 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
               <Controller
                 name="comment"
                 type="text"
+                rules={{ required: true }}
                 control={control}
                 render={({ field }) => (
                   <Input {...field} type="text" placeholder="Komentar" />
                 )}
               />
             </Col>
+            {errors.comment && <p className="text-danger">This is required.</p>}
+
             <Col sm="12">
               <div className="d-flex justify-content-end mt-1">
                 <Button className="me-1" color="primary" type="submit">

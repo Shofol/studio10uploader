@@ -1,9 +1,11 @@
-// ** React Imports
-import { Fragment, forwardRef, useEffect, useState } from "react";
+import {
+  Fragment,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState
+} from "react";
 
-// ** Add New Modal Component
-
-// ** Third Party Components
 import DataTable from "react-data-table-component";
 import {
   ChevronDown,
@@ -16,9 +18,8 @@ import {
   Video
 } from "react-feather";
 import ReactPaginate from "react-paginate";
-
-// ** Reactstrap Imports
 import {
+  Button,
   Card,
   CardTitle,
   Col,
@@ -32,9 +33,11 @@ import {
   UncontrolledButtonDropdown
 } from "reactstrap";
 
+import toast from "react-hot-toast";
 import api from "../../api/api";
 import DeleteDaten from "./DeleteDaten";
 import EditDaten from "./EditDaten";
+import ViewDaten from "./ViewDaten";
 
 // ** Bootstrap Checkbox Component
 const BootstrapCheckbox = forwardRef((props, ref) => (
@@ -43,36 +46,64 @@ const BootstrapCheckbox = forwardRef((props, ref) => (
   </div>
 ));
 
-const DatenTable = () => {
+const DatenTable = forwardRef((props, ref) => {
   // ** States
   const [modal, setModal] = useState(false);
+  const [viewModal, setViewModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchValue, setSearchValue] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [selectedRowToEdit, setSelectedRowToEdit] = useState(null);
-  const [data, setData] = useState([])
+  const [selectedRowToView, setSelectedRowToView] = useState(null);
+  const [selectedRowToDelete, setSelectedRowToDelete] = useState(null);
+  const [selectedRowsToDelete, setSelectedRowsToDelete] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [data, setData] = useState([]);
+  const offset = 10;
 
-  const fetchData = async () => {
+  const fetchData = async (start = 0, end = offset, per_page = offset) => {
     const result = await api.post("file/lists", {
-      start: 0,
-      end: 1,
-      per_page: 10
+      start,
+      end,
+      per_page
     });
-    console.log(result);
+    setTotalPages(result.data.totalPage);
     setData(result.data.data);
   };
+
+  useImperativeHandle(ref, () => ({
+    updateData() {
+      fetchData();
+    }
+  }));
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  // ** Function to handle Modal toggle
+  const deleteDaten = async () => {
+    const ids = selectedRowsToDelete.map((item) => item.id);
+
+    try {
+      const result = await api.delete(`file/${ids.join(",")}`);
+      toast.success("File(s) deleted successfully.", { className: "py-2" });
+      fetchData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleModal = () => {
     if (modal) {
       setSelectedRowToEdit(null);
+      fetchData();
     }
     setModal(!modal);
+  };
+
+  const handleViewModal = () => {
+    setViewModal(!viewModal);
   };
 
   const handleDeleteModal = () => {
@@ -87,7 +118,10 @@ const DatenTable = () => {
       cell: (row) => (
         <div className="d-flex align-items-center">
           <div className="user-info text-truncate">
-            <span className="d-block fw-bold text-truncate">
+            <span
+              className="d-block fw-bold text-truncate"
+              style={{ width: "200px" }}
+            >
               {row.title}
             </span>
           </div>
@@ -108,7 +142,7 @@ const DatenTable = () => {
     {
       name: "File size",
       sortable: true,
-      selector: (row) => `Size: ${row.file_size} mb`
+      selector: (row) => `Size: ${row.file_size}`
     },
     {
       name: "Actions",
@@ -133,7 +167,7 @@ const DatenTable = () => {
               href="/"
               className="cursor-pointer"
               onClick={(e) => {
-                e.preventDefault();
+                setSelectedRowToDelete(row);
                 setDeleteModal(!deleteModal);
               }}
             >
@@ -147,47 +181,48 @@ const DatenTable = () => {
   ];
 
   // ** Function to handle filter
-  const handleFilter = (e) => {
-    const value = e.target.value;
-    let updatedData = [];
-    setSearchValue(value);
+  // const handleFilter = (e) => {
+  //   const value = e.target.value;
+  //   let updatedData = [];
+  //   setSearchValue(value);
 
-    if (value.length) {
-      updatedData = data.filter((item) => {
-        const startsWith =
-          item.fileName.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.fileSize
-            .toString()
-            .toLowerCase()
-            .startsWith(value.toLowerCase()) ||
-          item.fileType.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.duration
-            .toString()
-            .toLowerCase()
-            .startsWith(value.toLowerCase());
+  //   if (value.length) {
+  //     updatedData = data.filter((item) => {
+  //       const startsWith =
+  //         item.fileName.toLowerCase().startsWith(value.toLowerCase()) ||
+  //         item.fileSize
+  //           .toString()
+  //           .toLowerCase()
+  //           .startsWith(value.toLowerCase()) ||
+  //         item.fileType.toLowerCase().startsWith(value.toLowerCase()) ||
+  //         item.duration
+  //           .toString()
+  //           .toLowerCase()
+  //           .startsWith(value.toLowerCase());
 
-        const includes =
-          item.fileName.toLowerCase().includes(value.toLowerCase()) ||
-          item.fileSize
-            .toString()
-            .toLowerCase()
-            .includes(value.toLowerCase()) ||
-          item.fileType.toLowerCase().includes(value.toLowerCase()) ||
-          item.duration.toString().toLowerCase().includes(value.toLowerCase());
+  //       const includes =
+  //         item.fileName.toLowerCase().includes(value.toLowerCase()) ||
+  //         item.fileSize
+  //           .toString()
+  //           .toLowerCase()
+  //           .includes(value.toLowerCase()) ||
+  //         item.fileType.toLowerCase().includes(value.toLowerCase()) ||
+  //         item.duration.toString().toLowerCase().includes(value.toLowerCase());
 
-        if (startsWith) {
-          return startsWith;
-        } else if (!startsWith && includes) {
-          return includes;
-        } else return null;
-      });
-      setFilteredData(updatedData);
-      setSearchValue(value);
-    }
-  };
+  //       if (startsWith) {
+  //         return startsWith;
+  //       } else if (!startsWith && includes) {
+  //         return includes;
+  //       } else return null;
+  //     });
+  //     setFilteredData(updatedData);
+  //     setSearchValue(value);
+  //   }
+  // };
 
   // ** Function to handle Pagination
   const handlePagination = (page) => {
+    fetchData(page.selected * offset, offset);
     setCurrentPage(page.selected);
   };
 
@@ -198,9 +233,7 @@ const DatenTable = () => {
       nextLabel=""
       forcePage={currentPage}
       onPageChange={(page) => handlePagination(page)}
-      pageCount={
-        searchValue.length ? Math.ceil(filteredData.length / 7) : Math.ceil(data.length / 7) || 1
-      }
+      pageCount={totalPages}
       breakLabel="..."
       pageRangeDisplayed={2}
       marginPagesDisplayed={2}
@@ -221,9 +254,27 @@ const DatenTable = () => {
     <Fragment>
       <Card>
         <Row className="justify-content-between align-items-center mx-0 mb-2">
-          <Col>
+          <Col md="4" sm="12">
             <CardTitle className="mb-0">Files</CardTitle>
           </Col>
+          {selectedRowsToDelete.length > 0 && (
+            <Col
+              md="4"
+              sm="12"
+              className="d-flex justify-content-end align-items-center mt-1"
+            >
+              <Button
+                color="danger"
+                outline
+                onClick={() => {
+                  deleteDaten();
+                }}
+              >
+                <Trash size={15} />
+                <span className="align-middle ms-50">Delete</span>
+              </Button>
+            </Col>
+          )}
           <Col
             className="d-flex align-items-center justify-content-end mt-1"
             md="4"
@@ -239,7 +290,7 @@ const DatenTable = () => {
                 bsSize="sm"
                 id="search-input"
                 value={searchValue}
-                onChange={handleFilter}
+                // onChange={handleFilter}
               />
               <UncontrolledButtonDropdown>
                 <DropdownToggle color="secondary" caret outline>
@@ -270,15 +321,20 @@ const DatenTable = () => {
             pagination
             selectableRows
             columns={columns}
-            paginationPerPage={7}
+            paginationPerPage={offset}
             className="react-dataTable"
             sortIcon={<ChevronDown size={10} />}
             paginationComponent={CustomPagination}
             paginationDefaultPage={currentPage + 1}
             selectableRowsComponent={BootstrapCheckbox}
-            data={searchValue.length ? filteredData : data}
+            data={data}
+            onRowClicked={(data) => {
+              setSelectedRowToView(data);
+              setViewModal(!modal);
+            }}
             onSelectedRowsChange={(e) => {
-              console.log(JSON.stringify(e));
+              setSelectedRowsToDelete(e.selectedRows);
+              console.log(e);
             }}
           />
         </div>
@@ -290,9 +346,26 @@ const DatenTable = () => {
           data={selectedRowToEdit}
         />
       )}
-      <DeleteDaten open={deleteModal} handleModal={handleDeleteModal} />
+      {selectedRowToDelete && (
+        <DeleteDaten
+          open={deleteModal}
+          handleModal={handleDeleteModal}
+          onDelete={() => {
+            fetchData();
+            handleDeleteModal();
+          }}
+          data={selectedRowToDelete}
+        />
+      )}
+      {selectedRowToView && (
+        <ViewDaten
+          open={viewModal}
+          handleModal={handleViewModal}
+          data={selectedRowToView}
+        />
+      )}
     </Fragment>
   );
-};
+});
 
 export default DatenTable;
