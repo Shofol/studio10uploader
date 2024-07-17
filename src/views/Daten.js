@@ -14,16 +14,8 @@ const Daten = () => {
   const audioRef = useRef(null);
 
   const submit = async (data) => {
-    const config = {
-      onUploadProgress: (progressEvent) => {
-        const percentCompleted = Math.floor(
-          (progressEvent.loaded * 100) / progressEvent.total
-        );
-        setProgress(percentCompleted);
-      }
-    };
     try {
-      const result = await api.post("file/store", data, config);
+      const result = await api.post("file/store", data);
       toast.success("File(s) uploaded successfully.", { className: "py-2" });
       tableRef.current.updateData();
       setProgress(0);
@@ -35,10 +27,19 @@ const Daten = () => {
 
   const handleData = async (file, size, duration) => {
     let filePath = "";
+    const config = {
+      onUploadProgress: (progressEvent) => {
+        const percentCompleted = Math.floor(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        setProgress(percentCompleted);
+      }
+    };
+
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const uploadResult = await api.post("file/upload", formData);
+      const uploadResult = await api.post("file/upload", formData, config);
       filePath = uploadResult.data.filePath;
     } catch (error) {
       console.log(error);
