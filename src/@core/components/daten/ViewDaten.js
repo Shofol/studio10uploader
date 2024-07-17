@@ -13,7 +13,7 @@ const ViewDaten = ({ open, handleModal, data }) => {
       <ModalBody className="d-flex justify-content-center">
         {data.file_type.includes("image") && (
           <img
-            src="https://placehold.co/600x400/EEE/31343C"
+            src={`${data.file_name}`}
             style={{ width: "50vw" }}
           />
         )}
@@ -21,13 +21,13 @@ const ViewDaten = ({ open, handleModal, data }) => {
           <video
             controls
             autoPlay
-            src="https://youtu.be/ScMzIvxBSi4"
+            src={data.file_name}
             style={{ width: "50vw" }}
           />
         )}
         {data.file_type.includes("audio") && (
           <audio controls>
-            <source src="horse.ogg" />
+            <source src={data.file_name} />
           </audio>
         )}
       </ModalBody>

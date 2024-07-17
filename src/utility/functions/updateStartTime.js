@@ -16,6 +16,14 @@ export const updateStartTime = (list, startTime) => {
     );
     tempArray[i].startTime = entryStartTime;
     currentStartTime = entryStartTime;
+
+    if (tempArray[i].children && tempArray[i].children.length > 0) {
+      const updatedChilList = updateStartTime(
+        tempArray[i].children,
+        tempArray[i + 1] ? tempArray[i + 1].startTime : startTime
+      );
+      tempArray[i].children = updatedChilList;
+    }
   }
   return tempArray;
 };

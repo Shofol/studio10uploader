@@ -124,8 +124,9 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
                 )}
               />
             </Col>
-            {errors.mediaType && <p className="text-danger">This is required.</p>}
-            
+            {errors.mediaType && (
+              <p className="text-danger">This is required.</p>
+            )}
 
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="duration">
@@ -134,7 +135,10 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
               <Controller
                 name="duration"
                 control={control}
-                rules={{ required: true }}
+                rules={{
+                  required: true,
+                  validate: (value) => value !== "00:00:00"
+                }}
                 render={({ field }) => (
                   <Cleave
                     {...field}
@@ -146,8 +150,9 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
                 )}
               />
             </Col>
-            {errors.duration && <p className="text-danger">This is required.</p>}
-
+            {errors.duration && (
+              <p className="text-danger">This is required.</p>
+            )}
 
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="comment">
@@ -164,7 +169,6 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
               />
             </Col>
             {errors.comment && <p className="text-danger">This is required.</p>}
-
 
             <Col sm="12">
               <div className="d-flex justify-content-end mt-1">

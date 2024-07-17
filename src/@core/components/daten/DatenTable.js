@@ -52,8 +52,6 @@ const DatenTable = forwardRef((props, ref) => {
   const [viewModal, setViewModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [searchValue, setSearchValue] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
   const [selectedRowToEdit, setSelectedRowToEdit] = useState(null);
   const [selectedRowToView, setSelectedRowToView] = useState(null);
   const [selectedRowToDelete, setSelectedRowToDelete] = useState(null);
@@ -62,11 +60,20 @@ const DatenTable = forwardRef((props, ref) => {
   const [data, setData] = useState([]);
   const offset = 10;
 
-  const fetchData = async (start = 0, end = offset, per_page = offset) => {
+  const fetchData = async (
+    start = 0,
+    end = offset,
+    per_page = offset,
+    searchText = "",
+    filterType = ""
+  ) => {
     const result = await api.post("file/lists", {
       start,
       end,
-      per_page
+      per_page,
+      orderby: "file_name",
+      filter: "DESC",
+      search: { field: { file_type: filterType } }
     });
     setTotalPages(result.data.totalPage);
     setData(result.data.data);
@@ -89,8 +96,10 @@ const DatenTable = forwardRef((props, ref) => {
       const result = await api.delete(`file/${ids.join(",")}`);
       toast.success("File(s) deleted successfully.", { className: "py-2" });
       fetchData();
+      selectedRowsToDelete([]);
     } catch (error) {
       console.log(error);
+      selectedRowsToDelete([]);
     }
   };
 
@@ -180,46 +189,6 @@ const DatenTable = forwardRef((props, ref) => {
     }
   ];
 
-  // ** Function to handle filter
-  // const handleFilter = (e) => {
-  //   const value = e.target.value;
-  //   let updatedData = [];
-  //   setSearchValue(value);
-
-  //   if (value.length) {
-  //     updatedData = data.filter((item) => {
-  //       const startsWith =
-  //         item.fileName.toLowerCase().startsWith(value.toLowerCase()) ||
-  //         item.fileSize
-  //           .toString()
-  //           .toLowerCase()
-  //           .startsWith(value.toLowerCase()) ||
-  //         item.fileType.toLowerCase().startsWith(value.toLowerCase()) ||
-  //         item.duration
-  //           .toString()
-  //           .toLowerCase()
-  //           .startsWith(value.toLowerCase());
-
-  //       const includes =
-  //         item.fileName.toLowerCase().includes(value.toLowerCase()) ||
-  //         item.fileSize
-  //           .toString()
-  //           .toLowerCase()
-  //           .includes(value.toLowerCase()) ||
-  //         item.fileType.toLowerCase().includes(value.toLowerCase()) ||
-  //         item.duration.toString().toLowerCase().includes(value.toLowerCase());
-
-  //       if (startsWith) {
-  //         return startsWith;
-  //       } else if (!startsWith && includes) {
-  //         return includes;
-  //       } else return null;
-  //     });
-  //     setFilteredData(updatedData);
-  //     setSearchValue(value);
-  //   }
-  // };
-
   // ** Function to handle Pagination
   const handlePagination = (page) => {
     fetchData(page.selected * offset, offset);
@@ -286,29 +255,47 @@ const DatenTable = forwardRef((props, ref) => {
               </InputGroupText>
               <Input
                 className="dataTable-filter"
-                type="text"
-                bsSize="sm"
+                type="search"
                 id="search-input"
-                value={searchValue}
-                // onChange={handleFilter}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    fetchData(0, offset, offset, e.target.value);
+                  }
+                }}
               />
               <UncontrolledButtonDropdown>
                 <DropdownToggle color="secondary" caret outline>
                   <Filter size={15} />
-                  {/* <span className="align-middle ms-50">Export</span> */}
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem className="w-100">
+                  <DropdownItem
+                    className="w-100"
+                    onClick={(e) => {
+                      fetchData(0, offset, offset, "", "image");
+                    }}
+                  >
                     <Image size={15} />
                     <span className="align-middle ms-50">Image</span>
                   </DropdownItem>
-                  <DropdownItem className="w-100">
+                  <DropdownItem
+                    className="w-100"
+                    onClick={(e) => {
+                      fetchData(0, offset, offset, "", "video");
+                    }}
+                  >
                     <Video size={15} />
                     <span className="align-middle ms-50">Video</span>
                   </DropdownItem>
                   <DropdownItem className="w-100">
                     <Music size={15} />
-                    <span className="align-middle ms-50">Audio</span>
+                    <span
+                      className="align-middle ms-50"
+                      onClick={(e) => {
+                        fetchData(0, offset, offset, "", "audio");
+                      }}
+                    >
+                      Audio
+                    </span>
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledButtonDropdown>

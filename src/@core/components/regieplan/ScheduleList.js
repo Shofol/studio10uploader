@@ -9,13 +9,22 @@ import {
 import { Copy, Edit, File, Trash } from "react-feather";
 
 // ** Reactstrap Imports
+import { hoursToSeconds, minutesToSeconds } from "date-fns";
 import { Button, Card, CardHeader, Table } from "reactstrap";
+import { formatSeconds } from "../../../utility/functions/formatTime";
 import { updateStartTime } from "../../../utility/functions/updateStartTime";
+import FileForm from "./FileForm";
 
 const ScheduleList = forwardRef(({ data }, ref) => {
   const [listArr, setListArr] = useState([]);
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
+  const [modal, setModal] = useState(false);
+  const [selectedGroupIndex, setSelectedGroupIndex] = useState(null);
+
+  const handleModal = () => {
+    setModal(!modal);
+  };
 
   useEffect(() => {
     setListArr(data.schedule);
@@ -24,6 +33,50 @@ const ScheduleList = forwardRef(({ data }, ref) => {
   const handleNewEntry = (entry) => {
     const tempArray = [...listArr];
     tempArray.push(entry);
+    setListArr(updateStartTime(tempArray, data.startTime));
+  };
+
+  const updateDuration = (list) => {
+    let seconds = 0;
+    list.map((item) => {
+      const [itemHours, itemMinutes, itemSeconds] = item.duration.split(":");
+      const hoursInSeconds = hoursToSeconds(itemHours);
+      const minutesInseconds = minutesToSeconds(itemMinutes);
+      seconds = seconds + +hoursInSeconds + +minutesInseconds + +itemSeconds;
+    });
+    return formatSeconds(seconds);
+  };
+
+  const handleChildEntry = (entry, index) => {
+    const parentIndex = index ? index : selectedGroupIndex;
+    const tempArray = [...listArr];
+    tempArray[parentIndex].children.push(entry);
+    tempArray[parentIndex].duration = updateDuration(
+      tempArray[parentIndex].children
+    );
+    setListArr(updateStartTime(tempArray, data.startTime));
+  };
+
+  const handleCopy = (entry) => {
+    entry.startTime = null;
+    handleNewEntry(entry);
+  };
+
+  const handleChildCopy = (entry, index) => {
+    entry.startTime = null;
+    handleChildEntry(entry, index);
+  };
+
+  const handleDelete = (index) => {
+    const tempArray = [...listArr];
+    tempArray.splice(index, 1);
+    setListArr(updateStartTime(tempArray, data.startTime));
+  };
+
+  const handleChildDelete = (index, childIndex) => {
+    const tempArray = [...listArr];
+    tempArray[index].children.splice(childIndex, 1);
+    tempArray[index].duration = updateDuration(tempArray[index].children);
     setListArr(updateStartTime(tempArray, data.startTime));
   };
 
@@ -55,7 +108,10 @@ const ScheduleList = forwardRef(({ data }, ref) => {
   };
 
   const handleChildSort = (parentIndex, childArray) => {
-    const swappedChildArray = swap(childArray);
+    const swappedChildArray = updateStartTime(
+      swap(childArray),
+      listArr[parentIndex].startTime
+    );
     const tempArray = [...listArr];
     tempArray[parentIndex].children = swappedChildArray;
     setListArr(tempArray);
@@ -79,7 +135,7 @@ const ScheduleList = forwardRef(({ data }, ref) => {
               <th style={{ width: "100px" }}>Pos</th>
               <th style={{ width: "100px" }}>Bild</th>
               <th style={{ width: "100px" }}>Ton</th>
-              <th style={{ width: "100px" }}>Uhrzeit</th>
+              <th style={{ width: "300px" }}>Uhrzeit</th>
               <th style={{ width: "100px" }}>Dauer</th>
               <th style={{ width: "300px" }}>File-Name</th>
               <th style={{ width: "300px" }}>Kommentar</th>
@@ -110,7 +166,7 @@ const ScheduleList = forwardRef(({ data }, ref) => {
                     <td style={{ width: "100px" }} className="bg-light">
                       {item.media}
                     </td>
-                    <td style={{ width: "100px" }} className="bg-light">
+                    <td style={{ width: "300px" }} className="bg-light">
                       {item.startTime}
                     </td>
                     <td style={{ width: "100px" }} className="bg-light">
@@ -131,6 +187,10 @@ const ScheduleList = forwardRef(({ data }, ref) => {
                             size="sm"
                             outline
                             color="primary"
+                            onClick={() => {
+                              setSelectedGroupIndex(index);
+                              handleModal(!modal);
+                            }}
                           >
                             <File size={10} />
                           </Button.Ripple>
@@ -140,6 +200,9 @@ const ScheduleList = forwardRef(({ data }, ref) => {
                           size="sm"
                           outline
                           color="primary"
+                          onClick={() => {
+                            handleCopy({ ...item });
+                          }}
                         >
                           <Copy size={10} />
                         </Button.Ripple>
@@ -156,6 +219,7 @@ const ScheduleList = forwardRef(({ data }, ref) => {
                           size="sm"
                           outline
                           color="primary"
+                          onClick={() => handleDelete(index)}
                         >
                           <Trash size={10} />
                         </Button.Ripple>
@@ -179,7 +243,7 @@ const ScheduleList = forwardRef(({ data }, ref) => {
                           }}
                         >
                           <td style={{ width: "100px", paddingLeft: "36px" }}>
-                            {child.id}
+                            {index + 1}.{childIndex + 1}
                           </td>
                           <td style={{ width: "100px" }}>{child.mediaType}</td>
                           <td style={{ width: "100px" }}>{child.media}</td>
@@ -194,6 +258,9 @@ const ScheduleList = forwardRef(({ data }, ref) => {
                                 size="sm"
                                 outline
                                 color="primary"
+                                onClick={() => {
+                                  handleChildCopy({ ...child }, index);
+                                }}
                               >
                                 <Copy size={10} />
                               </Button.Ripple>
@@ -210,6 +277,8 @@ const ScheduleList = forwardRef(({ data }, ref) => {
                                 size="sm"
                                 outline
                                 color="primary"
+                                onClick={() => handleChildDelete(index, childIndex)
+                                }
                               >
                                 <Trash size={10} />
                               </Button.Ripple>
@@ -224,6 +293,14 @@ const ScheduleList = forwardRef(({ data }, ref) => {
           </tbody>
         </Table>
       )}
+      <FileForm
+        open={modal}
+        handleModal={handleModal}
+        onFormSubmit={(data) => {
+          handleChildEntry(data);
+          handleModal();
+        }}
+      />
     </>
   );
 });

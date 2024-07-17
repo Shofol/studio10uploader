@@ -224,7 +224,10 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
               <Controller
                 name="duration"
                 control={control}
-                rules={{ required: true }}
+                rules={{
+                  required: true,
+                  validate: (value) => value !== "00:00:00"
+                }}
                 render={({ field }) => (
                   <Cleave
                     {...field}

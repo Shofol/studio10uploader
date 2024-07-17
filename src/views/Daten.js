@@ -13,13 +13,6 @@ const Daten = () => {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
 
-  const toBase64 = (file) => new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-    });
-
   const submit = async (data) => {
     const config = {
       onUploadProgress: (progressEvent) => {
@@ -40,10 +33,20 @@ const Daten = () => {
     }
   };
 
-  const handleData = (file, size, duration) => {
+  const handleData = async (file, size, duration) => {
+    let filePath = "";
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const uploadResult = await api.post("file/upload", formData);
+      filePath = uploadResult.data.filePath;
+    } catch (error) {
+      console.log(error);
+    }
+
     const data = {
       title: file.name,
-      file_name: file.name,
+      file_name: filePath,
       file_type: file.type,
       file_size: size,
       file_duration: duration

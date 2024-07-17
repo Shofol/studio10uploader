@@ -12,12 +12,13 @@ const Regieplan = () => {
   const [entryMethod, setEntryMethod] = useState();
   const [modal, setModal] = useState(false);
   const [newPlan, setNewPlan] = useState(false);
-  // const [schedules, setSchedules] = useState(Schedules);
   const [currentSchedule, setCurrentSchedule] = useState(null);
-  // const [newEntry, setNewEntry] = useState(null);
   const listRef = useRef(null);
 
   const handleModal = () => {
+    if (entryMethod && modal) {
+      setEntryMethod(null);
+    }
     setModal(!modal);
   };
 
@@ -31,7 +32,6 @@ const Regieplan = () => {
 
   return (
     <Card>
-      <CardHeader>{/* <CardTitle>🙌</CardTitle> */}</CardHeader>
       <CardBody>
         <div className="d-flex justify-content-between mb-2">
           {currentSchedule && (
@@ -155,7 +155,7 @@ const Regieplan = () => {
             onFormSubmit={handleNewEntry}
           />
         )}
-        {newPlan && (
+        {newPlan && !entryMethod && (
           <NewPlan
             open={modal}
             handleModal={handleModal}

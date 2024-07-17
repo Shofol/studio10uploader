@@ -33,10 +33,10 @@ const EditDaten = ({ open, handleModal, data }) => {
   } = useForm({
     defaultValues: {
       id: data ? data.id : "",
-      file_name: data ? data.file_name : "",
+      title: data ? data.title : "",
       file_duration: data ? data.file_duration : "",
       file_size: data ? data.file_size : "",
-      file_type: data ? data.file_type : ""
+      file_type: data ? data.file_type : "",
     }
   });
   const onSubmit = async (data) => {
@@ -73,7 +73,7 @@ const EditDaten = ({ open, handleModal, data }) => {
       <ModalBody className="flex-grow-1">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-1">
-            <Label className="form-label" for="file_name">
+            <Label className="form-label" for="title">
               File Name
             </Label>
             <InputGroup>
@@ -81,7 +81,7 @@ const EditDaten = ({ open, handleModal, data }) => {
                 <File size={15} />
               </InputGroupText>
               <Controller
-                name="file_name"
+                name="title"
                 control={control}
                 render={({ field }) => <Input {...field} />}
               />
