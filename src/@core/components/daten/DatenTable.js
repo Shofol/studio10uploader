@@ -73,7 +73,7 @@ const DatenTable = forwardRef((props, ref) => {
       per_page,
       orderby: "file_name",
       filter: "DESC",
-      search: { field: { file_type: filterType } }
+      search: { field: { title: searchText, file_type: filterType } }
     });
     setTotalPages(result.data.totalPage);
     setData(result.data.data);
