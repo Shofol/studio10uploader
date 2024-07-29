@@ -16,7 +16,7 @@ import {
   ModalBody,
   ModalHeader,
   Row,
-  UncontrolledButtonDropdown
+  UncontrolledButtonDropdown,
 } from "reactstrap";
 
 // ** Utils
@@ -24,6 +24,7 @@ import { selectThemeColors } from "@utils";
 import Cleave from "cleave.js/react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import colors from "../../../utility/data/colors.json";
 
 const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
   const options = { time: true, timePattern: ["h", "m", "s"] };
@@ -33,7 +34,8 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
     media: data ? data.media : "",
     duration: data ? data.duration : "",
     comment: data ? data.comment : "",
-    audio: data ? data.audio : ""
+    audio: data ? data.audio : "",
+    color: data ? data.color : "",
   };
 
   const colorOptions = [
@@ -42,11 +44,12 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
     { id: 4, value: "file3", label: "File 3", fileType: "image" },
     { id: 3, value: "file4", label: "File 4", fileType: "image" },
     { id: 5, value: "file5", label: "File 5", fileType: "image" },
-    { id: 6, value: "file6", label: "File 6", fileType: "image" }
+    { id: 6, value: "file6", label: "File 6", fileType: "image" },
   ];
 
   const filterColors1 = (inputValue) => {
-    return colorOptions.filter((i) => i.label.toLowerCase().includes(inputValue.toLowerCase())
+    return colorOptions.filter((i) =>
+      i.label.toLowerCase().includes(inputValue.toLowerCase())
     );
   };
 
@@ -61,9 +64,9 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
     control,
     reset,
     watch,
-    formState: { errors }
+    formState: { errors },
   } = useForm({
-    defaultValues: initialValues
+    defaultValues: initialValues,
   });
 
   const watchAudioValue = watch("mediaType");
@@ -117,7 +120,7 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                 <Controller
                   name="media"
                   rules={{
-                    required: true
+                    required: true,
                   }}
                   control={control}
                   render={({ field }) => (
@@ -226,7 +229,7 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                 control={control}
                 rules={{
                   required: true,
-                  validate: (value) => value !== "00:00:00"
+                  validate: (value) => value !== "00:00:00",
                 }}
                 render={({ field }) => (
                   <Cleave
@@ -258,6 +261,36 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
               />
             </Col>
             {errors.comment && <p className="text-danger">This is required.</p>}
+
+            <Col sm="12" className="mb-1">
+              <Label className="form-label" for="mediaType">
+                Color
+              </Label>
+              <Controller
+                name="mediaType"
+                type="text"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Input {...field} type="select">
+                    <option value={null}>Select a value</option>
+                    {colors.map((color) => {
+                      return (
+                        <option
+                          value={color.value}
+                          style={{
+                            backgroundColor: color.value,
+                            color: "black",
+                          }}
+                        >
+                          {color.label}
+                        </option>
+                      );
+                    })}
+                  </Input>
+                )}
+              />
+            </Col>
 
             <Col sm="12">
               <div className="d-flex justify-content-end mt-1">

@@ -31,7 +31,12 @@
     },
     {
         "id": 7,
-        "value": "#A78C7",
-        "label": "#A78C7"
+        "value": "#A78C7D",
+        "label": "#A78C7D"
+    },
+    {
+        "id": 8,
+        "value": "#FF0000",
+        "label": "#FF0000"
     }
 ]

@@ -14,8 +14,8 @@ import {
   ModalHeader,
   Row
 } from "reactstrap";
+import colors from "../../../utility/data/colors.json";
 
-// ** Utils
 
 const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
   const options = { time: true, timePattern: ["h", "m", "s"] };
@@ -29,7 +29,8 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
     comment: data ? data.comment : "",
     startTime: data ? data.startTime : "",
     name: data ? data.name : "",
-    audio: data ? data.audio : ""
+    audio: data ? data.audio : "",
+    color: data ? data.color : "",
   };
   const {
     handleSubmit,
@@ -169,6 +170,36 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
               />
             </Col>
             {errors.comment && <p className="text-danger">This is required.</p>}
+
+            <Col sm="12" className="mb-1">
+              <Label className="form-label" for="mediaType">
+                Color
+              </Label>
+              <Controller
+                name="mediaType"
+                type="text"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Input {...field} type="select">
+                    <option value={null}>Select a value</option>
+                    {colors.map((color) => {
+                      return (
+                        <option
+                          value={color.value}
+                          style={{
+                            backgroundColor: color.value,
+                            color: "black",
+                          }}
+                        >
+                          {color.label}
+                        </option>
+                      );
+                    })}
+                  </Input>
+                )}
+              />
+            </Col>
 
             <Col sm="12">
               <div className="d-flex justify-content-end mt-1">
