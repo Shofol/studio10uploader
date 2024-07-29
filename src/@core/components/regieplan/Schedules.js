@@ -1,8 +1,17 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
-import { TabContent, TabPane, Nav, NavItem, NavLink, Button, Card, CardBody } from "reactstrap";
+import {
+  TabContent,
+  TabPane,
+  Nav,
+  NavItem,
+  NavLink,
+  Button,
+  Card,
+  CardBody,
+} from "reactstrap";
 import { Box, File, Type } from "react-feather";
 import { add, format } from "date-fns";
-import ScheduleList from './ScheduleList';
+import ScheduleList from "./ScheduleList";
 import FileForm from "./FileForm";
 import TextForm from "./TextForm";
 import GroupForm from "./GroupForm";
@@ -11,6 +20,8 @@ const Schedules = forwardRef(({ data }) => {
   const [active, setActive] = useState(0);
   const [entryMethod, setEntryMethod] = useState();
   const [modal, setModal] = useState(false);
+  const [editData, setEditData] = useState(null);
+  const [editIndex, setEditIndex] = useState(null);
   const [scheduleTypes, setScheduleTypes] = useState([
     { label: "Vor Dem Spiel", value: 0, scheduleData: null, isReverse: true },
     { label: "1. Halbzeit", value: 1, scheduleData: null, isReverse: false },
@@ -28,11 +39,24 @@ const Schedules = forwardRef(({ data }) => {
   };
 
   const handleNewEntry = (entry) => {
-    refs.current[active].handleEntry(entry);
+    if (editIndex !== null && editIndex >= 0) {
+      refs.current[active].handleEntry(entry, editIndex);
+    } else {
+      refs.current[active].handleEntry(entry);
+    }
+    setEditIndex(null);
+    setEditData(null);
   };
 
   const handleModal = () => {
     setModal(!modal);
+  };
+
+  const handleEdit = (entry, index) => {
+    setEditData(entry);
+    setEditIndex(index);
+    setEntryMethod(entry.type);
+    handleModal();
   };
 
   const calculateTime = (
@@ -99,108 +123,114 @@ const Schedules = forwardRef(({ data }) => {
   return (
     <Card>
       <CardBody>
-      <div className="d-flex justify-content-between align-items-center pb-2">
-        {data && (
-          <h4>
-            {data.title} (Uhrzeit: {data.startTime})
-          </h4>
-        )}
-        {data && (
-          <div className="d-flex gap-1">
-            <Button.Ripple
-              onClick={() => {
-                handleModal();
-                setEntryMethod("file");
-              }}
-              size="sm"
-              color="primary"
-              outline
-            >
-              <File size={14} />
-              <span className="align-middle ms-25">File</span>
-            </Button.Ripple>
-            <Button.Ripple
-              onClick={() => {
-                handleModal();
-                setEntryMethod("group");
-              }}
-              size="sm"
-              color="primary"
-              outline
-            >
-              <Box size={14} />
-              <span className="align-middle ms-25">Sammelposition</span>
-            </Button.Ripple>
-            <Button.Ripple
-              onClick={() => {
-                handleModal();
-                setEntryMethod("text");
-              }}
-              size="sm"
-              color="primary"
-              outline
-            >
-              <Type size={14} />
-              <span className="align-middle ms-25">Textposition</span>
-            </Button.Ripple>
-          </div>
-        )}
-      </div>
+        <div className="d-flex justify-content-between align-items-center pb-2">
+          {data && (
+            <h4>
+              {data.title} (Uhrzeit: {data.startTime})
+            </h4>
+          )}
+          {data && (
+            <div className="d-flex gap-1">
+              <Button.Ripple
+                onClick={() => {
+                  handleModal();
+                  setEntryMethod("file");
+                }}
+                size="sm"
+                color="primary"
+                outline
+              >
+                <File size={14} />
+                <span className="align-middle ms-25">File</span>
+              </Button.Ripple>
+              <Button.Ripple
+                onClick={() => {
+                  handleModal();
+                  setEntryMethod("group");
+                }}
+                size="sm"
+                color="primary"
+                outline
+              >
+                <Box size={14} />
+                <span className="align-middle ms-25">Sammelposition</span>
+              </Button.Ripple>
+              <Button.Ripple
+                onClick={() => {
+                  handleModal();
+                  setEntryMethod("text");
+                }}
+                size="sm"
+                color="primary"
+                outline
+              >
+                <Type size={14} />
+                <span className="align-middle ms-25">Textposition</span>
+              </Button.Ripple>
+            </div>
+          )}
+        </div>
 
-      <div className="border p-2">
-        <Nav tabs>
-          {scheduleTypes.map((item) => {
-            return (
-              <NavItem key={item.value}>
-                <NavLink
-                  active={active === item.value}
-                  onClick={() => {
-                    toggle(item.value);
-                  }}
-                >
-                  {item.label}
-                </NavLink>
-              </NavItem>
-            );
-          })}
-        </Nav>
-        <TabContent className="py-50" activeTab={active}>
-          {scheduleTypes.map((item, idx) => {
-            return (
-              <TabPane tabId={item.value} key={item.value}>
-                {item.scheduleData && (
-                <ScheduleList
-                  data={item.scheduleData}
-                  isReverse={item.isReverse}
-                  ref={(el) => (refs.current[idx] = el)}
-                />
-              )}
-              </TabPane>
-            );
-          })}
-        </TabContent>
-      </div>
-      {entryMethod === "file" && (
-        <FileForm
-          open={modal}
-          handleModal={handleModal}
-          onFormSubmit={handleNewEntry}
-        />
-      )}
-      {entryMethod === "group" && (
-        <GroupForm
-          open={modal}
-          handleModal={handleModal}
-          onFormSubmit={handleNewEntry}
-        />
-      )}
-      {entryMethod === "text" && (
-        <TextForm
-          open={modal}
-          handleModal={handleModal}
-          onFormSubmit={handleNewEntry}
-        />
-      )}
+        <div className="border p-2">
+          <Nav tabs>
+            {scheduleTypes.map((item) => {
+              return (
+                <NavItem key={item.value}>
+                  <NavLink
+                    active={active === item.value}
+                    onClick={() => {
+                      toggle(item.value);
+                    }}
+                  >
+                    {item.label}
+                  </NavLink>
+                </NavItem>
+              );
+            })}
+          </Nav>
+          <TabContent className="py-50" activeTab={active}>
+            {scheduleTypes.map((item, idx) => {
+              return (
+                <TabPane tabId={item.value} key={item.value}>
+                  {item.scheduleData && (
+                    <ScheduleList
+                      handleEdit={(entry, index) => {
+                        handleEdit(entry, index);
+                      }}
+                      data={item.scheduleData}
+                      isReverse={item.isReverse}
+                      ref={(el) => (refs.current[idx] = el)}
+                    />
+                  )}
+                </TabPane>
+              );
+            })}
+          </TabContent>
+        </div>
+        {entryMethod === "file" && (
+          <FileForm
+            open={modal}
+            data={editData}
+            handleModal={handleModal}
+            onFormSubmit={handleNewEntry}
+          />
+        )}
+        {entryMethod === "group" && (
+          <GroupForm
+            open={modal}
+            data={editData}
+            handleModal={handleModal}
+            onFormSubmit={handleNewEntry}
+          />
+        )}
+        {entryMethod === "text" && (
+          <TextForm
+            open={modal}
+            data={editData}
+            handleModal={handleModal}
+            onFormSubmit={handleNewEntry}
+          />
+        )}
       </CardBody>
     </Card>
   );

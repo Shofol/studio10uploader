@@ -17,7 +17,7 @@ import { updateStartTime } from "../../../utility/functions/updateStartTime";
 
 import FileForm from "./FileForm";
 
-const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
+const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
   const [listArr, setListArr] = useState([]);
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
@@ -32,9 +32,13 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
     setListArr(data.schedule);
   }, [data]);
 
-  const handleNewEntry = (entry) => {
+  const handleNewEntry = (entry, index) => {
     const tempArray = [...listArr];
-    tempArray.push(entry);
+    if (index !== undefined && index >= 0) {
+      tempArray[index] = entry;
+    } else {
+      tempArray.push(entry);
+    }
     setListArr(
       isReverse
         ? updateReverseStartTime(tempArray, data.startTime)
@@ -101,12 +105,11 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
   const submit = () => {
     const plan = { ...data };
     plan.schedule = listArr;
-    console.log(plan);
   };
 
   useImperativeHandle(ref, () => ({
-    handleEntry(entry) {
-      handleNewEntry(entry);
+    handleEntry(entry, index) {
+      handleNewEntry(entry, index);
     },
     handleSave() {
       submit();
@@ -243,6 +246,9 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
                           size="sm"
                           outline
                           color="primary"
+                          onClick={() => {
+                            handleEdit({ ...item }, index);
+                          }}
                         >
                           <Edit size={10} />
                         </Button.Ripple>

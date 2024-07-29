@@ -25,10 +25,10 @@ import Cleave from "cleave.js/react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import colors from "../../../utility/data/colors.json";
+import { useEffect } from "react";
 
 const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
   const options = { time: true, timePattern: ["h", "m", "s"] };
-
   const initialValues = {
     mediaType: data ? data.mediaType : "",
     media: data ? data.media : "",
@@ -68,6 +68,12 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
   } = useForm({
     defaultValues: initialValues,
   });
+
+  useEffect(() => {
+    if (data) {
+      reset(data);
+    }
+  }, [data]);
 
   const watchAudioValue = watch("mediaType");
 
