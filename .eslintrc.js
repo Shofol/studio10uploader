@@ -46,10 +46,10 @@ module.exports = {
     "comma-style": "error",
     "computed-property-spacing": "error",
     "func-call-spacing": "error",
-    "implicit-arrow-linebreak": ["error", "beside"],
+    // "implicit-arrow-linebreak": ["error", "beside"],
     // indent: ['error', 4],
     "keyword-spacing": "error",
-    "multiline-ternary": ["error", "never"],
+    // "multiline-ternary": ["error", "never"],
     // 'no-lonely-if': 'error',
     "no-mixed-operators": "error",
     "no-multiple-empty-lines": ["error", { max: 2, maxEOF: 1 }],
@@ -79,6 +79,7 @@ module.exports = {
     "object-shorthand": "error",
     "prefer-const": "error",
     "prefer-template": "error",
+    "no-undef": "warn",
   },
 
   // rules: {

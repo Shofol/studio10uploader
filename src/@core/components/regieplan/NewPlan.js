@@ -11,7 +11,7 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
-  Row
+  Row,
 } from "reactstrap";
 import Rounds from "../../../utility/data/rounds.json";
 import Teams from "../../../utility/data/teams.json";
@@ -22,15 +22,23 @@ const NewPlan = ({ open, handleModal, data, onFormSubmit }) => {
   const {
     handleSubmit,
     control,
-    formState: { errors }
+    formState: { errors },
   } = useForm({
     defaultValues: {
       title: data ? data.title : "",
       round: data ? data.round : "",
       opponent: data ? data.opponent : "",
       startTime: data ? data.startTime : "",
-      schedule: data ? data.schedule : []
-    }
+      schedule: data
+        ? data.schedule
+        : {
+            beforeGame: [],
+            break: [],
+            afterGame: [],
+            firstHalf: [],
+            secondHalf: [],
+          },
+    },
   });
   const onSubmit = (data) => {
     console.log(errors);

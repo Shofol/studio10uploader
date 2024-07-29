@@ -153,7 +153,9 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
         <Table responsive id="section-to-print">
           <thead>
             <tr>
-              <th style={{ width: "100px" }}>Pos</th>
+              <th style={{ width: "100px", borderLeft: `10px solid #f3f2f7` }}>
+                Pos
+              </th>
               <th style={{ width: "100px" }}>Bild</th>
               <th style={{ width: "100px" }}>Ton</th>
               <th style={{ width: "300px" }}>Uhrzeit</th>
@@ -170,6 +172,7 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
               return (
                 <>
                   <tr
+                    key={item.name}
                     draggable
                     onDragStart={() => (dragItem.current = index)}
                     onDragEnter={() => (dragOverItem.current = index)}
@@ -178,7 +181,15 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
                       e.preventDefault();
                     }}
                   >
-                    <td style={{ width: "100px" }} className="bg-light">
+                    <td
+                      style={{
+                        width: "100px",
+                        borderLeft: `10px solid ${
+                          item.color ? item.color : "#f6f6f6"
+                        }`,
+                      }}
+                      className="bg-light"
+                    >
                       {index + 1}
                     </td>
                     <td style={{ width: "100px" }} className="bg-light">
@@ -265,7 +276,15 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
                             e.preventDefault();
                           }}
                         >
-                          <td style={{ width: "100px", paddingLeft: "36px" }}>
+                          <td
+                            style={{
+                              width: "100px",
+                              paddingLeft: "36px",
+                              borderLeft: `10px solid ${
+                                child.color ? child.color : "#f6f6f6"
+                              }`,
+                            }}
+                          >
                             {index + 1}.{childIndex + 1}
                           </td>
                           <td style={{ width: "100px" }}>{child.mediaType}</td>
@@ -274,7 +293,7 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
                           <td style={{ width: "100px" }}>{child.duration}</td>
                           <td style={{ width: "300px" }}>{child.name}</td>
                           <td style={{ width: "300px" }}>{child.comment}</td>
-                          <td id="section-to-hide" className="bg-light">
+                          <td id="section-to-hide">
                             <div className="d-flex gap-1">
                               <Button.Ripple
                                 className="btn-icon"

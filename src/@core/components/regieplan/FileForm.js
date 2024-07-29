@@ -263,11 +263,11 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
             {errors.comment && <p className="text-danger">This is required.</p>}
 
             <Col sm="12" className="mb-1">
-              <Label className="form-label" for="mediaType">
+              <Label className="form-label" for="color">
                 Color
               </Label>
               <Controller
-                name="mediaType"
+                name="color"
                 type="text"
                 control={control}
                 rules={{ required: true }}

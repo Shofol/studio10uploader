@@ -21,7 +21,8 @@ const Regieplan = () => {
   return (
     <Card>
       <CardBody>
-        <div className="d-flex justify-content-between mb-2">
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <CardHeader className="h2">Regieplan</CardHeader>
           <div className="d-flex gap-1 flex-1">
             <Button.Ripple
               size="sm"

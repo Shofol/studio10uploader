@@ -20,7 +20,7 @@ export const updateStartTime = (list, startTime) => {
       tempArray[i].startTime = startTime;
     } else {
       const entryStartTime = calculateTime(
-        tempArray[i].duration,
+        tempArray[i - 1].duration,
         currentStartTime
       );
 
@@ -32,7 +32,7 @@ export const updateStartTime = (list, startTime) => {
       const updatedChilList = updateStartTime(
         tempArray[i].children,
         tempArray[i - 1]
-          ? (tempArray[i - 1].duration, tempArray[i - 1].startTime)
+          ? calculateTime(tempArray[i - 1].duration, tempArray[i - 1].startTime)
           : startTime
       );
       tempArray[i].children = updatedChilList;
