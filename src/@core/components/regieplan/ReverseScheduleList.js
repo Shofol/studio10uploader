@@ -13,11 +13,9 @@ import { hoursToSeconds, minutesToSeconds } from "date-fns";
 import { Button, Card, CardHeader, Table } from "reactstrap";
 import { formatSeconds } from "../../../utility/functions/formatTime";
 import { updateReverseStartTime } from "../../../utility/functions/updateReverseStartTime";
-import { updateStartTime } from "../../../utility/functions/updateStartTime";
-
 import FileForm from "./FileForm";
 
-const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
+const ReverseScheduleList = forwardRef(({ data }, ref) => {
   const [listArr, setListArr] = useState([]);
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
@@ -35,11 +33,7 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
   const handleNewEntry = (entry) => {
     const tempArray = [...listArr];
     tempArray.push(entry);
-    setListArr(
-      isReverse
-        ? updateReverseStartTime(tempArray, data.startTime)
-        : updateStartTime(tempArray, data.startTime)
-    );
+    setListArr(updateReverseStartTime(tempArray, data.startTime));
   };
 
   const updateDuration = (list) => {
@@ -60,11 +54,7 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
     tempArray[parentIndex].duration = updateDuration(
       tempArray[parentIndex].children
     );
-    setListArr(
-      isReverse
-        ? updateReverseStartTime(tempArray, data.startTime)
-        : updateStartTime(tempArray, data.startTime)
-    );
+    setListArr(updateReverseStartTime(tempArray, data.startTime));
   };
 
   const handleCopy = (entry) => {
@@ -80,22 +70,14 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
   const handleDelete = (index) => {
     const tempArray = [...listArr];
     tempArray.splice(index, 1);
-    setListArr(
-      isReverse
-        ? updateReverseStartTime(tempArray, data.startTime)
-        : updateStartTime(tempArray, data.startTime)
-    );
+    setListArr(updateReverseStartTime(tempArray, data.startTime));
   };
 
   const handleChildDelete = (index, childIndex) => {
     const tempArray = [...listArr];
     tempArray[index].children.splice(childIndex, 1);
     tempArray[index].duration = updateDuration(tempArray[index].children);
-    setListArr(
-      isReverse
-        ? updateReverseStartTime(tempArray, data.startTime)
-        : updateStartTime(tempArray, data.startTime)
-    );
+    setListArr(updateReverseStartTime(tempArray, data.startTime));
   };
 
   const submit = () => {
@@ -122,17 +104,14 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
   };
 
   const handleSort = () => {
-    setListArr(
-      isReverse
-        ? updateReverseStartTime(swap(listArr), data.startTime)
-        : updateStartTime(swap(listArr), data.startTime)
-    );
+    setListArr(updateReverseStartTime(swap(listArr), data.startTime));
   };
 
   const handleChildSort = (parentIndex, childArray) => {
-    const swappedChildArray = isReverse
-      ? updateReverseStartTime(swap(childArray), listArr[parentIndex].startTime)
-      : updateStartTime(swap(childArray), listArr[parentIndex].startTime);
+    const swappedChildArray = updateReverseStartTime(
+      swap(childArray),
+      listArr[parentIndex].startTime
+    );
     const tempArray = [...listArr];
     tempArray[parentIndex].children = swappedChildArray;
     setListArr(tempArray);
@@ -178,7 +157,13 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
                       e.preventDefault();
                     }}
                   >
-                    <td style={{ width: "100px" }} className="bg-light">
+                    <td
+                      style={{
+                        width: "100px",
+                        borderLeft: `10px solid ${item.color}`,
+                      }}
+                      className="bg-light"
+                    >
                       {index + 1}
                     </td>
                     <td style={{ width: "100px" }} className="bg-light">
@@ -265,7 +250,13 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
                             e.preventDefault();
                           }}
                         >
-                          <td style={{ width: "100px", paddingLeft: "36px" }}>
+                          <td
+                            style={{
+                              width: "100px",
+                              paddingLeft: "36px",
+                              borderLeft: `10px solid ${child.color}`,
+                            }}
+                          >
                             {index + 1}.{childIndex + 1}
                           </td>
                           <td style={{ width: "100px" }}>{child.mediaType}</td>
@@ -329,4 +320,4 @@ const ScheduleList = forwardRef(({ data, isReverse }, ref) => {
   );
 });
 
-export default ScheduleList;
+export default ReverseScheduleList;

@@ -4,121 +4,308 @@
     "round": "Round 2",
     "opponent": "Basil",
     "startTime": "08:20:00 PM",
-    "schedule": [
-      {
-        "id": "1",
-        "type": "file",
-        "mediaType": "Moderator",
-        "media": "Video",
-        "startTime": "18:15:00",
-        "duration": "00:10:00",
-        "name": "Signal für  im Umgang aufschalten",
-        "comment": "Test"
-      },
-      {
-        "id": "2",
-        "type": "group",
-        "startTime": "18:15:00",
-        "duration": "00:10:00",
-        "name": "Signal für Bildschirme im Umgang aufschalten",
-        "comment": "Test",
-        "children": [
-          {
-            "id": "2.1",
-            "type": "file",
-            "mediaType": "Moderator",
-            "media": "Video",
-            "startTime": "18:15:00",
-            "duration": "00:10:00",
-            "name": "Signal für  im Umgang aufschalten",
-            "comment": "Test",
-            "audio": "Can be a file/filename"
-          },
-          {
-            "id": "2.2",
-            "type": "text",
-            "mediaType": "Moderator",
-            "media": "TV",
-            "startTime": "18:15:00",
-            "duration": "00:10:00",
-            "name": "Signal für  im Umgang aufschalten",
-            "comment": "Test",
-            "audio": ""
-          }
-        ]
-      },
-      {
-        "id": "3",
-        "type": "text",
-        "mediaType": "Moderator",
-        "media": "TV",
-        "startTime": "18:15:00",
-        "duration": "00:10:00",
-        "name": "Signal für  im Umgang aufschalten",
-        "comment": "Test",
-        "audio": ""
-      }
-    ]
-  },
-  {
-    "title": "Match No 2",
-    "round": "Round 4",
-    "opponent": "Basil",
-    "startTime": "08:20:00 PM",
-    "schedule": [
-      {
-        "id": "1",
-        "type": "file",
-        "mediaType": "Moderator",
-        "media": "Video",
-        "startTime": "18:15:00",
-        "duration": "00:10:00",
-        "name": "Signal für  im Umgang aufschalten",
-        "comment": "Test"
-      },
-      {
-        "id": "2",
-        "type": "group",
-        "startTime": "18:15:00",
-        "duration": "00:10:00",
-        "name": "Signal für Bildschirme im Umgang aufschalten",
-        "comment": "Test",
-        "children": [
-          {
-            "id": "2.1",
-            "type": "file",
-            "mediaType": "Moderator",
-            "media": "Video",
-            "startTime": "18:15:00",
-            "duration": "00:10:00",
-            "name": "Signal für  im Umgang aufschalten",
-            "comment": "Test",
-            "audio": "Can be a file/filename"
-          },
-          {
-            "id": "2.2",
-            "type": "text",
-            "mediaType": "Moderator",
-            "media": "TV",
-            "startTime": "18:15:00",
-            "duration": "00:10:00",
-            "name": "Signal für  im Umgang aufschalten",
-            "comment": "Test",
-            "audio": ""
-          }
-        ]
-      },
-      {
-        "id": "3",
-        "type": "text",
-        "mediaType": "Moderator",
-        "media": "TV",
-        "startTime": "18:15:00",
-        "duration": "00:10:00",
-        "name": "Signal für  im Umgang aufschalten",
-        "comment": "Test",
-        "audio": ""
-      }
-    ]
+    "schedule": {
+      "beforeGame": [
+        {
+          "id": "1",
+          "type": "file",
+          "mediaType": "Moderator",
+          "media": "Video",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für  im Umgang aufschalten",
+          "comment": "Test",
+          "color": "#ffffff"
+        },
+        {
+          "id": "2",
+          "type": "group",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für Bildschirme im Umgang aufschalten",
+          "comment": "Test",
+          "color": "#ffffff",
+          "children": [
+            {
+              "id": "2.1",
+              "type": "file",
+              "mediaType": "Moderator",
+              "media": "Video",
+              "startTime": "18:15:00",
+              "duration": "00:10:00",
+              "name": "Signal für  im Umgang aufschalten",
+              "comment": "Test",
+              "audio": "Can be a file/filename",
+              "color": "#ffffff"
+            },
+            {
+              "id": "2.2",
+              "type": "text",
+              "mediaType": "Moderator",
+              "media": "TV",
+              "startTime": "18:15:00",
+              "duration": "00:10:00",
+              "name": "Signal für  im Umgang aufschalten",
+              "comment": "Test",
+              "audio": "",
+              "color": "#ffffff"
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "type": "text",
+          "mediaType": "Moderator",
+          "media": "TV",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für  im Umgang aufschalten",
+          "comment": "Test",
+          "audio": "",
+          "color": "#ffffff"
+        }
+      ],
+      "firstHalf": [
+        {
+          "id": "1",
+          "type": "file",
+          "mediaType": "Moderator",
+          "media": "Video",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für  im Umgang aufschalten",
+          "comment": "Test",
+          "color": "#ffffff"
+        },
+        {
+          "id": "2",
+          "type": "group",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für Bildschirme im Umgang aufschalten",
+          "comment": "Test",
+          "color": "#ffffff",
+          "children": [
+            {
+              "id": "2.1",
+              "type": "file",
+              "mediaType": "Moderator",
+              "media": "Video",
+              "startTime": "18:15:00",
+              "duration": "00:10:00",
+              "name": "Signal für  im Umgang aufschalten",
+              "comment": "Test",
+              "audio": "Can be a file/filename",
+              "color": "#ffffff"
+            },
+            {
+              "id": "2.2",
+              "type": "text",
+              "mediaType": "Moderator",
+              "media": "TV",
+              "startTime": "18:15:00",
+              "duration": "00:10:00",
+              "name": "Signal für  im Umgang aufschalten",
+              "comment": "Test",
+              "audio": "",
+              "color": "#ffffff"
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "type": "text",
+          "mediaType": "Moderator",
+          "media": "TV",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für  im Umgang aufschalten",
+          "comment": "Test",
+          "audio": "",
+          "color": "#ffffff"
+        }
+      ],
+      "break": [
+        {
+          "id": "1",
+          "type": "file",
+          "mediaType": "Moderator",
+          "media": "Video",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für  im Umgang aufschalten",
+          "comment": "Test",
+          "color": "#ffffff"
+        },
+        {
+          "id": "2",
+          "type": "group",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für Bildschirme im Umgang aufschalten",
+          "comment": "Test",
+          "color": "#ffffff",
+          "children": [
+            {
+              "id": "2.1",
+              "type": "file",
+              "mediaType": "Moderator",
+              "media": "Video",
+              "startTime": "18:15:00",
+              "duration": "00:10:00",
+              "name": "Signal für  im Umgang aufschalten",
+              "comment": "Test",
+              "audio": "Can be a file/filename",
+              "color": "#ffffff"
+            },
+            {
+              "id": "2.2",
+              "type": "text",
+              "mediaType": "Moderator",
+              "media": "TV",
+              "startTime": "18:15:00",
+              "duration": "00:10:00",
+              "name": "Signal für  im Umgang aufschalten",
+              "comment": "Test",
+              "audio": "",
+              "color": "#ffffff"
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "type": "text",
+          "mediaType": "Moderator",
+          "media": "TV",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für  im Umgang aufschalten",
+          "comment": "Test",
+          "audio": "",
+          "color": "#ffffff"
+        }
+      ],
+      "secondHalf": [
+        {
+          "id": "1",
+          "type": "file",
+          "mediaType": "Moderator",
+          "media": "Video",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für  im Umgang aufschalten",
+          "comment": "Test",
+          "color": "#ffffff"
+        },
+        {
+          "id": "2",
+          "type": "group",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für Bildschirme im Umgang aufschalten",
+          "comment": "Test",
+          "color": "#ffffff",
+          "children": [
+            {
+              "id": "2.1",
+              "type": "file",
+              "mediaType": "Moderator",
+              "media": "Video",
+              "startTime": "18:15:00",
+              "duration": "00:10:00",
+              "name": "Signal für  im Umgang aufschalten",
+              "comment": "Test",
+              "audio": "Can be a file/filename",
+              "color": "#ffffff"
+            },
+            {
+              "id": "2.2",
+              "type": "text",
+              "mediaType": "Moderator",
+              "media": "TV",
+              "startTime": "18:15:00",
+              "duration": "00:10:00",
+              "name": "Signal für  im Umgang aufschalten",
+              "comment": "Test",
+              "audio": "",
+              "color": "#ffffff"
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "type": "text",
+          "mediaType": "Moderator",
+          "media": "TV",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für  im Umgang aufschalten",
+          "comment": "Test",
+          "audio": "",
+          "color": "#ffffff"
+        }
+      ],
+      "afterGame": [
+        {
+          "id": "1",
+          "type": "file",
+          "mediaType": "Moderator",
+          "media": "Video",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für  im Umgang aufschalten",
+          "comment": "Test",
+          "color": "#ffffff"
+        },
+        {
+          "id": "2",
+          "type": "group",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für Bildschirme im Umgang aufschalten",
+          "comment": "Test",
+          "color": "#ffffff",
+          "children": [
+            {
+              "id": "2.1",
+              "type": "file",
+              "mediaType": "Moderator",
+              "media": "Video",
+              "startTime": "18:15:00",
+              "duration": "00:10:00",
+              "name": "Signal für  im Umgang aufschalten",
+              "comment": "Test",
+              "audio": "Can be a file/filename",
+              "color": "#ffffff"
+            },
+            {
+              "id": "2.2",
+              "type": "text",
+              "mediaType": "Moderator",
+              "media": "TV",
+              "startTime": "18:15:00",
+              "duration": "00:10:00",
+              "name": "Signal für  im Umgang aufschalten",
+              "comment": "Test",
+              "audio": "",
+              "color": "#ffffff"
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "type": "text",
+          "mediaType": "Moderator",
+          "media": "TV",
+          "startTime": "18:15:00",
+          "duration": "00:10:00",
+          "name": "Signal für  im Umgang aufschalten",
+          "comment": "Test",
+          "audio": "",
+          "color": "#ffffff"
+        }
+      ]
+    }
   }
 ]
+

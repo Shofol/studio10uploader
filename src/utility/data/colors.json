@@ -1,0 +1,37 @@
+[
+    {
+        "id": 1,
+        "value": "#6E7083",
+        "label": "#6E7083"
+    },
+    {
+        "id": 2,
+        "value": "#D5BA57",
+        "label": "#D5BA57"
+    },
+    {
+        "id": 4,
+        "value": "#C86F6F",
+        "label": "#C86F6F"
+    },
+    {
+        "id": 3,
+        "value": "#93AC94",
+        "label": "#93AC94"
+    },
+    {
+        "id": 5,
+        "value": "#A5BEE7",
+        "label": "#A5BEE7"
+    },
+    {
+        "id": 6,
+        "value": "#E1AC80",
+        "label": "F#E1AC80"
+    },
+    {
+        "id": 7,
+        "value": "#A78C7",
+        "label": "#A78C7"
+    }
+]
