@@ -4,7 +4,7 @@ import {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
+  useState
 } from "react";
 import { Copy, Edit, File, Trash } from "react-feather";
 
@@ -114,6 +114,9 @@ const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
     handleSave() {
       submit();
     },
+    getData() {
+      return listArr;
+    }
   }));
 
   const swap = (array) => {
@@ -153,7 +156,7 @@ const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
         </Card>
       )}
       {listArr.length > 0 && (
-        <Table responsive id="section-to-print">
+        <Table>
           <thead>
             <tr>
               <th style={{ width: "100px", borderLeft: `10px solid #f3f2f7` }}>
@@ -165,9 +168,7 @@ const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
               <th style={{ width: "100px" }}>Dauer</th>
               <th style={{ width: "300px" }}>File-Name</th>
               <th style={{ width: "300px" }}>Kommentar</th>
-              <th style={{ width: "300px" }} id="section-to-hide">
-                Actions
-              </th>
+              <th style={{ width: "300px" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -189,7 +190,7 @@ const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
                         width: "100px",
                         borderLeft: `10px solid ${
                           item.color ? item.color : "#f6f6f6"
-                        }`,
+                        }`
                       }}
                       className="bg-light"
                     >
@@ -214,7 +215,7 @@ const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
                       {item.comment}
                     </td>
 
-                    <td id="section-to-hide" className="bg-light">
+                    <td className="bg-light">
                       <div className="d-flex gap-1">
                         {item.type === "group" && (
                           <Button.Ripple
@@ -288,7 +289,7 @@ const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
                               paddingLeft: "36px",
                               borderLeft: `10px solid ${
                                 child.color ? child.color : "#f6f6f6"
-                              }`,
+                              }`
                             }}
                           >
                             {index + 1}.{childIndex + 1}
@@ -299,7 +300,7 @@ const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
                           <td style={{ width: "100px" }}>{child.duration}</td>
                           <td style={{ width: "300px" }}>{child.name}</td>
                           <td style={{ width: "300px" }}>{child.comment}</td>
-                          <td id="section-to-hide">
+                          <td>
                             <div className="d-flex gap-1">
                               <Button.Ripple
                                 className="btn-icon"

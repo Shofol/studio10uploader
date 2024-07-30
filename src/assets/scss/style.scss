@@ -12,25 +12,30 @@ WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BET
     align-items: center;
     width: 100%;
     height: 100%;
-  }
-  * {
-    box-shadow: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
-  .app-content {
+  * {
+    box-shadow: none !important;
     padding: 0 !important;
     margin: 0 !important;
   }
+
   #section-to-print {
-    visibility: visible;
-    position: absolute;
+    visibility: visible !important;
+    position: fixed;
     left: 0;
     top: 0;
-    background: white !important;
-    color: black !important;
+    // background: white !important;
+    // color: black !important;
   }
 
   #section-to-hide {
     visibility: hidden;
   }
+}
+
+.row {
+  padding: 0.5rem 0 !important;
 }

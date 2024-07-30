@@ -3,7 +3,7 @@ import { add, format } from "date-fns";
 const calculateTime = (duration, startTime) => {
   const [durationHours, durationMinutes, durationSeconds] = duration.split(":");
   return format(
-    add(new Date(`12-01-2024 ${startTime}`), {
+    add(new Date(`2024-01-01T${startTime}`), {
       hours: +durationHours,
       minutes: +durationMinutes,
       seconds: +durationSeconds,

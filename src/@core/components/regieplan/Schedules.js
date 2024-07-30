@@ -1,33 +1,41 @@
-import React, { forwardRef, useEffect, useRef, useState } from "react";
+import { add, format } from "date-fns";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState
+} from "react";
+import { Box, File, Type } from "react-feather";
 import {
-  TabContent,
-  TabPane,
-  Nav,
-  NavItem,
-  NavLink,
   Button,
   Card,
   CardBody,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane
 } from "reactstrap";
-import { Box, File, Type } from "react-feather";
-import { add, format } from "date-fns";
-import ScheduleList from "./ScheduleList";
 import FileForm from "./FileForm";
-import TextForm from "./TextForm";
 import GroupForm from "./GroupForm";
+import PrintData from "./PrintData";
+import ScheduleList from "./ScheduleList";
+import TextForm from "./TextForm";
 
-const Schedules = forwardRef(({ data }) => {
+const Schedules = forwardRef(({ data }, ref) => {
   const [active, setActive] = useState(0);
   const [entryMethod, setEntryMethod] = useState();
   const [modal, setModal] = useState(false);
   const [editData, setEditData] = useState(null);
   const [editIndex, setEditIndex] = useState(null);
+  const [printData, setPrintData] = useState(null);
   const [scheduleTypes, setScheduleTypes] = useState([
     { label: "Vor Dem Spiel", value: 0, scheduleData: null, isReverse: true },
     { label: "1. Halbzeit", value: 1, scheduleData: null, isReverse: false },
     { label: "Pause", value: 2, scheduleData: null, isReverse: false },
     { label: "2. Halbzeit", value: 3, scheduleData: null, isReverse: false },
-    { label: "Nach Dem Spiel", value: 4, scheduleData: null, isReverse: false },
+    { label: "Nach Dem Spiel", value: 4, scheduleData: null, isReverse: false }
   ]);
 
   const refs = useRef([]);
@@ -66,10 +74,10 @@ const Schedules = forwardRef(({ data }) => {
     startTime
   ) => {
     return format(
-      add(new Date(`12-01-2024 ${startTime}`), {
+      add(new Date(`2024-01-01T${startTime}`), {
         hours: +durationHours,
         minutes: +durationMinutes,
-        seconds: +durationSeconds,
+        seconds: +durationSeconds
       }),
       "HH:mm:ss"
     );
@@ -116,123 +124,167 @@ const Schedules = forwardRef(({ data }) => {
     setScheduleTypes(tempArray);
   };
 
+  const handlePrint = () => {
+    const tempPrintData = {};
+    tempPrintData.title = data.title;
+    tempPrintData.startTime = data.startTime;
+    tempPrintData.schedule = {
+      beforeGame: [],
+      firstHalf: [],
+      break: [],
+      secondHalf: [],
+      afterGame: []
+    };
+    refs.current.map((item, index) => {
+      switch (index) {
+        case 0:
+          console.log(item.current);
+          tempPrintData.schedule.beforeGame = item.getData();
+          break;
+        case 1:
+          tempPrintData.schedule.firstHalf = item.getData();
+          break;
+        case 2:
+          tempPrintData.schedule.break = item.getData();
+          break;
+        case 3:
+          tempPrintData.schedule.secondHalf = item.getData();
+          break;
+        case 4:
+          tempPrintData.schedule.afterGame = item.getData();
+          break;
+        default:
+          break;
+      }
+    });
+    setPrintData(tempPrintData);
+  };
+
+  useImperativeHandle(ref, () => ({
+    handlePrint() {
+      handlePrint();
+    }
+  }));
+
   useEffect(() => {
     mapData();
   }, [data]);
 
   return (
-    <Card>
-      <CardBody>
-        <div className="d-flex justify-content-between align-items-center pb-2">
-          {data && (
-            <h4>
-              {data.title} (Uhrzeit: {data.startTime})
-            </h4>
-          )}
-          {data && (
-            <div className="d-flex gap-1">
-              <Button.Ripple
-                onClick={() => {
-                  handleModal();
-                  setEntryMethod("file");
-                }}
-                size="sm"
-                color="primary"
-                outline
-              >
-                <File size={14} />
-                <span className="align-middle ms-25">File</span>
-              </Button.Ripple>
-              <Button.Ripple
-                onClick={() => {
-                  handleModal();
-                  setEntryMethod("group");
-                }}
-                size="sm"
-                color="primary"
-                outline
-              >
-                <Box size={14} />
-                <span className="align-middle ms-25">Sammelposition</span>
-              </Button.Ripple>
-              <Button.Ripple
-                onClick={() => {
-                  handleModal();
-                  setEntryMethod("text");
-                }}
-                size="sm"
-                color="primary"
-                outline
-              >
-                <Type size={14} />
-                <span className="align-middle ms-25">Textposition</span>
-              </Button.Ripple>
-            </div>
-          )}
-        </div>
-
-        <div className="border p-2">
-          <Nav tabs>
-            {scheduleTypes.map((item) => {
-              return (
-                <NavItem key={item.value}>
-                  <NavLink
-                    active={active === item.value}
-                    onClick={() => {
-                      toggle(item.value);
-                    }}
-                  >
-                    {item.label}
-                  </NavLink>
-                </NavItem>
-              );
-            })}
-          </Nav>
-          <TabContent className="py-50" activeTab={active}>
-            {scheduleTypes.map((item, idx) => {
-              return (
-                <TabPane tabId={item.value} key={item.value}>
-                  {item.scheduleData && (
-                    <ScheduleList
-                      handleEdit={(entry, index) => {
-                        handleEdit(entry, index);
+    <>
+      <Card id="section-to-hide">
+        <CardBody>
+          <div className="d-flex justify-content-between align-items-center pb-2">
+            {data && (
+              <h4>
+                {data.title} (Uhrzeit: {data.startTime})
+              </h4>
+            )}
+            {data && (
+              <div className="d-flex gap-1">
+                <Button.Ripple
+                  onClick={() => {
+                    handleModal();
+                    setEntryMethod("file");
+                  }}
+                  size="sm"
+                  color="primary"
+                  outline
+                >
+                  <File size={14} />
+                  <span className="align-middle ms-25">File</span>
+                </Button.Ripple>
+                <Button.Ripple
+                  onClick={() => {
+                    handleModal();
+                    setEntryMethod("group");
+                  }}
+                  size="sm"
+                  color="primary"
+                  outline
+                >
+                  <Box size={14} />
+                  <span className="align-middle ms-25">Sammelposition</span>
+                </Button.Ripple>
+                <Button.Ripple
+                  onClick={() => {
+                    handleModal();
+                    setEntryMethod("text");
+                  }}
+                  size="sm"
+                  color="primary"
+                  outline
+                >
+                  <Type size={14} />
+                  <span className="align-middle ms-25">Textposition</span>
+                </Button.Ripple>
+              </div>
+            )}
+          </div>
+          <div className="border p-2">
+            <Nav tabs>
+              {scheduleTypes.map((item) => {
+                return (
+                  <NavItem key={item.value}>
+                    <NavLink
+                      active={active === item.value}
+                      onClick={() => {
+                        toggle(item.value);
                       }}
-                      data={item.scheduleData}
-                      isReverse={item.isReverse}
-                      ref={(el) => (refs.current[idx] = el)}
-                    />
-                  )}
-                </TabPane>
-              );
-            })}
-          </TabContent>
-        </div>
-        {entryMethod === "file" && (
-          <FileForm
-            open={modal}
-            data={editData}
-            handleModal={handleModal}
-            onFormSubmit={handleNewEntry}
-          />
-        )}
-        {entryMethod === "group" && (
-          <GroupForm
-            open={modal}
-            data={editData}
-            handleModal={handleModal}
-            onFormSubmit={handleNewEntry}
-          />
-        )}
-        {entryMethod === "text" && (
-          <TextForm
-            open={modal}
-            data={editData}
-            handleModal={handleModal}
-            onFormSubmit={handleNewEntry}
-          />
-        )}
-      </CardBody>
-    </Card>
+                    >
+                      {item.label}
+                    </NavLink>
+                  </NavItem>
+                );
+              })}
+            </Nav>
+            <TabContent className="py-50" activeTab={active}>
+              {scheduleTypes.map((item, idx) => {
+                return (
+                  <TabPane tabId={item.value} key={item.value}>
+                    {item.scheduleData && (
+                      <ScheduleList
+                        handleEdit={(entry, index) => {
+                          handleEdit(entry, index);
+                        }}
+                        data={item.scheduleData}
+                        isReverse={item.isReverse}
+                        ref={(el) => (refs.current[idx] = el)}
+                      />
+                    )}
+                  </TabPane>
+                );
+              })}
+            </TabContent>
+          </div>
+          {entryMethod === "file" && (
+            <FileForm
+              open={modal}
+              data={editData}
+              handleModal={handleModal}
+              onFormSubmit={handleNewEntry}
+            />
+          )}
+          {entryMethod === "group" && (
+            <GroupForm
+              open={modal}
+              data={editData}
+              handleModal={handleModal}
+              onFormSubmit={handleNewEntry}
+            />
+          )}
+          {entryMethod === "text" && (
+            <TextForm
+              open={modal}
+              data={editData}
+              handleModal={handleModal}
+              onFormSubmit={handleNewEntry}
+            />
+          )}
+        </CardBody>
+      </Card>
+      {printData && <PrintData data={printData} />}
+    </>
   );
 });
 

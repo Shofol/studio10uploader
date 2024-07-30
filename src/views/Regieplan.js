@@ -53,8 +53,10 @@ const Regieplan = () => {
               size="sm"
               outline
               onClick={() => {
-                window.print();
-              }}
+                if (listRef.current) {
+                listRef.current.handlePrint();
+              }
+}}
             >
               <Printer size={14} />
               <span className="align-middle ms-25">Print</span>
