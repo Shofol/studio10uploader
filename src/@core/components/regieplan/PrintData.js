@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 
 const generateTable = (schedule) => {
   return (
@@ -51,7 +51,7 @@ const generateTable = (schedule) => {
               <div
                 className="row"
                 style={{
-                  width: "50px",
+                  width: "50px"
                 }}
               >
                 {index + 1}
@@ -83,10 +83,9 @@ const generateTable = (schedule) => {
   );
 };
 
-const PrintData = ({ data }) => {
-  console.log('print data test')
+const PrintData = forwardRef(({ data }, ref) => {
   return (
-    <div id="section-to-print" style={{maxWidth:'90vw'}}>
+    <div ref={ref}>
       <div className="d-flex justify-content-between">
         <h4 className="pb-2">
           {data.title} (Uhrzeit: {data.startTime})
@@ -129,6 +128,6 @@ const PrintData = ({ data }) => {
       )}
     </div>
   );
-};
+});
 
 export default PrintData;

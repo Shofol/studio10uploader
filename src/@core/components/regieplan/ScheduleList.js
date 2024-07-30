@@ -156,7 +156,7 @@ const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
         </Card>
       )}
       {listArr.length > 0 && (
-        <Table>
+        <Table responsive>
           <thead>
             <tr>
               <th style={{ width: "100px", borderLeft: `10px solid #f3f2f7` }}>

@@ -7,6 +7,7 @@ import React, {
   useState
 } from "react";
 import { Box, File, Type } from "react-feather";
+import { useReactToPrint } from 'react-to-print';
 import {
   Button,
   Card,
@@ -30,6 +31,7 @@ const Schedules = forwardRef(({ data }, ref) => {
   const [editData, setEditData] = useState(null);
   const [editIndex, setEditIndex] = useState(null);
   const [printData, setPrintData] = useState(null);
+  const printRef = useRef();
   const [scheduleTypes, setScheduleTypes] = useState([
     { label: "Vor Dem Spiel", value: 0, scheduleData: null, isReverse: true },
     { label: "1. Halbzeit", value: 1, scheduleData: null, isReverse: false },
@@ -171,6 +173,15 @@ const Schedules = forwardRef(({ data }, ref) => {
     mapData();
   }, [data]);
 
+  const printContent = useReactToPrint({
+    content: () => printRef.current,
+  });
+
+  useEffect(() => {
+    printContent();
+  }, [printData]);
+  
+
   return (
     <>
       <Card id="section-to-hide">
@@ -284,7 +295,7 @@ const Schedules = forwardRef(({ data }, ref) => {
           )}
         </CardBody>
       </Card>
-      {printData && <PrintData data={printData} />}
+      {printData && <PrintData data={printData} ref={printRef}/>}
     </>
   );
 });
