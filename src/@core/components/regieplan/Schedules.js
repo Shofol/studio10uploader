@@ -125,6 +125,7 @@ const Schedules = forwardRef(({ data }, ref) => {
   };
 
   const handlePrint = () => {
+    console.log('test')
     const tempPrintData = {};
     tempPrintData.title = data.title;
     tempPrintData.startTime = data.startTime;
@@ -161,7 +162,7 @@ const Schedules = forwardRef(({ data }, ref) => {
   };
 
   useImperativeHandle(ref, () => ({
-    handlePrint() {
+    handlePrintData() {
       handlePrint();
     }
   }));

@@ -54,7 +54,7 @@ const Regieplan = () => {
               outline
               onClick={() => {
                 if (listRef.current) {
-                listRef.current.handlePrint();
+                listRef.current.handlePrintData();
               }
 }}
             >

@@ -24,18 +24,37 @@ WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BET
 
   #section-to-print {
     visibility: visible !important;
-    position: fixed;
+    position: absolute;
     left: 0;
     top: 0;
+    max-height: 100%;
+    overflow: visible !important;
     // background: white !important;
     // color: black !important;
   }
 
   #section-to-hide {
     visibility: hidden;
+    height: 0;
   }
+  div {
+    border: 1px solid black;
+
+    // page-break-after: always;
+  }
+  // div {
+  //   break-inside: avoid;
+  // }
+}
+
+#section-to-print {
+  visibility: hidden;
 }
 
 .row {
   padding: 0.5rem 0 !important;
+}
+
+.row:first-child {
+  padding-left: 0.5rem !important;
 }

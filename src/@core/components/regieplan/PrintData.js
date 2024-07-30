@@ -51,7 +51,7 @@ const generateTable = (schedule) => {
               <div
                 className="row"
                 style={{
-                  width: "50px"
+                  width: "50px",
                 }}
               >
                 {index + 1}
@@ -84,10 +84,11 @@ const generateTable = (schedule) => {
 };
 
 const PrintData = ({ data }) => {
+  console.log('print data test')
   return (
-    <div id="section-to-print">
+    <div id="section-to-print" style={{maxWidth:'90vw'}}>
       <div className="d-flex justify-content-between">
-        <h4 className="py-2">
+        <h4 className="pb-2">
           {data.title} (Uhrzeit: {data.startTime})
         </h4>
       </div>
