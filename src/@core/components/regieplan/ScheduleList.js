@@ -102,18 +102,11 @@ const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
     );
   };
 
-  const submit = () => {
-    const plan = { ...data };
-    plan.schedule = listArr;
-  };
-
   useImperativeHandle(ref, () => ({
     handleEntry(entry, index) {
       handleNewEntry(entry, index);
     },
-    handleSave() {
-      submit();
-    },
+
     getData() {
       return listArr;
     }
@@ -144,6 +137,9 @@ const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
     setListArr(tempArray);
   };
 
+  const getBgColor = (item) =>
+    item.color ? `bg-${item.color.substring(1)}` : "bg-light";
+
   return (
     <>
       {listArr.length <= 0 && (
@@ -159,9 +155,7 @@ const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
         <Table responsive>
           <thead>
             <tr>
-              <th style={{ width: "100px", borderLeft: `10px solid #f3f2f7` }}>
-                Pos
-              </th>
+              <th style={{ width: "100px" }}>Pos</th>
               <th style={{ width: "100px" }}>Bild</th>
               <th style={{ width: "100px" }}>Ton</th>
               <th style={{ width: "300px" }}>Uhrzeit</th>
@@ -184,15 +178,12 @@ const ScheduleList = forwardRef(({ data, isReverse, handleEdit }, ref) => {
                     onDragOver={(e) => {
                       e.preventDefault();
                     }}
+                    className={getBgColor(item)}
                   >
                     <td
                       style={{
-                        width: "100px",
-                        borderLeft: `10px solid ${
-                          item.color ? item.color : "#f6f6f6"
-                        }`
+                        width: "100px"
                       }}
-                      className="bg-light"
                     >
                       {index + 1}
                     </td>

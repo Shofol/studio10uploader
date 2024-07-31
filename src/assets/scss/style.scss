@@ -71,3 +71,21 @@ WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BET
 .row:first-child {
   padding-left: 0.5rem !important;
 }
+
+$colors: (
+  "6E7083": #6E7083,
+  "D5BA57": #D5BA57,
+  "C86F6F": #C86F6F,
+  "93AC94": #93AC94,
+  "A5BEE7": #A5BEE7,
+  "E1AC80": #E1AC80,
+  "A78C7D": #A78C7D,
+  "FF0000": #FF0000
+);
+
+@each $name, $color in $colors {
+  .bg-#{$name} {
+    background-color: $color !important;
+    color: white !important;
+  }
+}

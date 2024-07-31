@@ -1,8 +1,10 @@
 // ** Reactstrap Imports
+import { selectThemeColors } from "@utils";
 import Cleave from "cleave.js/react";
 import { X } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import Select from "react-select";
 import {
   Button,
   Col,
@@ -15,7 +17,9 @@ import {
   Row
 } from "reactstrap";
 import colors from "../../../utility/data/colors.json";
-
+import media from "../../../utility/data/media.json";
+import mediaTypes from "../../../utility/data/mediaTypes.json";
+import { mapSelectValue } from "../../../utility/functions/mapSelectValue";
 
 const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
   const options = { time: true, timePattern: ["h", "m", "s"] };
@@ -30,7 +34,7 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
     startTime: data ? data.startTime : "",
     name: data ? data.name : "",
     audio: data ? data.audio : "",
-    color: data ? data.color : "",
+    color: data ? data.color : ""
   };
   const {
     handleSubmit,
@@ -95,12 +99,20 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Input {...field} type="select">
-                    <option>Select a value</option>
-                    <option>Willkommens Screen</option>
-                    <option>Kameras/Live</option>
-                    <option>TV</option>
-                  </Input>
+                  <Select
+                    {...field}
+                    isClearable={false}
+                    value={mapSelectValue(media, field)}
+                    theme={selectThemeColors}
+                    defaultValue={null}
+                    placeholder="Select a value"
+                    options={media}
+                    className="react-select"
+                    classNamePrefix="select"
+                    onChange={(e) => {
+                      field.onChange(e.value);
+                    }}
+                  />
                 )}
               />
             </Col>
@@ -115,13 +127,20 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Input {...field} type="select">
-                    <option value={null}>Select a value</option>
-                    <option value={"playlist"}>Playlist</option>
-                    <option value={"moderator"}>Moderator</option>
-                    <option value={"speaker"}>Speaker</option>
-                    <option value={"audio"}>Audio File</option>
-                  </Input>
+                  <Select
+                    {...field}
+                    isClearable={false}
+                    value={mapSelectValue(mediaTypes, field)}
+                    theme={selectThemeColors}
+                    defaultValue={null}
+                    placeholder="Select a value"
+                    options={mediaTypes}
+                    className="react-select"
+                    classNamePrefix="select"
+                    onChange={(e) => {
+                      field.onChange(e.value);
+                    }}
+                  />
                 )}
               />
             </Col>
@@ -181,22 +200,27 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Input {...field} type="select">
-                    <option value={null}>Select a value</option>
-                    {colors.map((color) => {
-                      return (
-                        <option
-                          value={color.value}
-                          style={{
-                            backgroundColor: color.value,
-                            color: "black",
-                          }}
-                        >
-                          {color.label}
-                        </option>
-                      );
-                    })}
-                  </Input>
+                  <Select
+                    {...field}
+                    isClearable={false}
+                    value={mapSelectValue(colors, field)}
+                    styles={{
+                      option: (styles, { data }) => ({
+                        ...styles,
+                        backgroundColor: data.value,
+                        color: "white"
+                      })
+                    }}
+                    theme={selectThemeColors}
+                    defaultValue={null}
+                    placeholder="Select a value"
+                    options={colors}
+                    className="react-select"
+                    classNamePrefix="select"
+                    onChange={(e) => {
+                      field.onChange(e.value);
+                    }}
+                  />
                 )}
               />
             </Col>

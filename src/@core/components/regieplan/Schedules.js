@@ -7,7 +7,8 @@ import React, {
   useState
 } from "react";
 import { Box, File, Type } from "react-feather";
-import { useReactToPrint } from 'react-to-print';
+import toast from "react-hot-toast";
+import { useReactToPrint } from "react-to-print";
 import {
   Button,
   Card,
@@ -18,6 +19,7 @@ import {
   TabContent,
   TabPane
 } from "reactstrap";
+import api from "../../api/api";
 import FileForm from "./FileForm";
 import GroupForm from "./GroupForm";
 import PrintData from "./PrintData";
@@ -126,8 +128,32 @@ const Schedules = forwardRef(({ data }, ref) => {
     setScheduleTypes(tempArray);
   };
 
+  const prepareData = (tempData) => {
+    refs.current.map((item, index) => {
+      switch (index) {
+        case 0:
+          tempData.schedule.beforeGame = item.getData();
+          break;
+        case 1:
+          tempData.schedule.firstHalf = item.getData();
+          break;
+        case 2:
+          tempData.schedule.break = item.getData();
+          break;
+        case 3:
+          tempData.schedule.secondHalf = item.getData();
+          break;
+        case 4:
+          tempData.schedule.afterGame = item.getData();
+          break;
+        default:
+          break;
+      }
+    });
+    return tempData;
+  };
+
   const handlePrint = () => {
-    console.log('test')
     const tempPrintData = {};
     tempPrintData.title = data.title;
     tempPrintData.startTime = data.startTime;
@@ -138,34 +164,28 @@ const Schedules = forwardRef(({ data }, ref) => {
       secondHalf: [],
       afterGame: []
     };
-    refs.current.map((item, index) => {
-      switch (index) {
-        case 0:
-          console.log(item.current);
-          tempPrintData.schedule.beforeGame = item.getData();
-          break;
-        case 1:
-          tempPrintData.schedule.firstHalf = item.getData();
-          break;
-        case 2:
-          tempPrintData.schedule.break = item.getData();
-          break;
-        case 3:
-          tempPrintData.schedule.secondHalf = item.getData();
-          break;
-        case 4:
-          tempPrintData.schedule.afterGame = item.getData();
-          break;
-        default:
-          break;
-      }
-    });
-    setPrintData(tempPrintData);
+
+    setPrintData(prepareData(tempPrintData));
+  };
+
+  const submit = async () => {
+    const plan = { ...data };
+    plan.status = 'open';
+    try {
+      const result = await api.post("event/store", prepareData(plan));
+      console.log(result);
+      toast.success("Event Created Successfully");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useImperativeHandle(ref, () => ({
     handlePrintData() {
       handlePrint();
+    },
+    handleSave() {
+      submit();
     }
   }));
 
@@ -174,13 +194,12 @@ const Schedules = forwardRef(({ data }, ref) => {
   }, [data]);
 
   const printContent = useReactToPrint({
-    content: () => printRef.current,
+    content: () => printRef.current
   });
 
   useEffect(() => {
     printContent();
   }, [printData]);
-  
 
   return (
     <>
@@ -295,7 +314,7 @@ const Schedules = forwardRef(({ data }, ref) => {
           )}
         </CardBody>
       </Card>
-      {printData && <PrintData data={printData} ref={printRef}/>}
+      {printData && <PrintData data={printData} ref={printRef} />}
     </>
   );
 });

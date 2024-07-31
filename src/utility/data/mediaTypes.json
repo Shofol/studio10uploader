@@ -1,0 +1,6 @@
+[
+  { "label": "Playlist", "value": "playlist" },
+  { "label": "Moderator", "value": "moderator" },
+  { "label": "Speaker", "value": "speaker" },
+  { "label": "Audio File", "value": "audio" }
+]

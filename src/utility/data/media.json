@@ -1,0 +1,6 @@
+[
+    { "label": "Willkommens Screen", "value": "screen" },
+    { "label": "Kameras/Live", "value": "live" },
+    { "label": "TV", "value": "tv" }
+  ]
+  

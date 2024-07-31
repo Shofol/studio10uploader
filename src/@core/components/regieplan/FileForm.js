@@ -16,16 +16,19 @@ import {
   ModalBody,
   ModalHeader,
   Row,
-  UncontrolledButtonDropdown,
+  UncontrolledButtonDropdown
 } from "reactstrap";
 
 // ** Utils
 import { selectThemeColors } from "@utils";
 import Cleave from "cleave.js/react";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import Select from "react-select";
 import colors from "../../../utility/data/colors.json";
-import { useEffect } from "react";
+import mediaTypes from "../../../utility/data/mediaTypes.json";
+import { mapSelectValue } from "../../../utility/functions/mapSelectValue";
 
 const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
   const options = { time: true, timePattern: ["h", "m", "s"] };
@@ -35,7 +38,7 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
     duration: data ? data.duration : "",
     comment: data ? data.comment : "",
     audio: data ? data.audio : "",
-    color: data ? data.color : "",
+    color: data ? data.color : ""
   };
 
   const colorOptions = [
@@ -44,7 +47,7 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
     { id: 4, value: "file3", label: "File 3", fileType: "image" },
     { id: 3, value: "file4", label: "File 4", fileType: "image" },
     { id: 5, value: "file5", label: "File 5", fileType: "image" },
-    { id: 6, value: "file6", label: "File 6", fileType: "image" },
+    { id: 6, value: "file6", label: "File 6", fileType: "image" }
   ];
 
   const filterColors1 = (inputValue) => {
@@ -64,9 +67,9 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
     control,
     reset,
     watch,
-    formState: { errors },
+    formState: { errors }
   } = useForm({
-    defaultValues: initialValues,
+    defaultValues: initialValues
   });
 
   useEffect(() => {
@@ -126,7 +129,7 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                 <Controller
                   name="media"
                   rules={{
-                    required: true,
+                    required: true
                   }}
                   control={control}
                   render={({ field }) => (
@@ -176,13 +179,20 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Input {...field} type="select">
-                    <option value={null}>Select a value</option>
-                    <option value={"playlist"}>Playlist</option>
-                    <option value={"moderator"}>Moderator</option>
-                    <option value={"speaker"}>Speaker</option>
-                    <option value={"audio"}>Audio File</option>
-                  </Input>
+                  <Select
+                    {...field}
+                    isClearable={false}
+                    value={mapSelectValue(mediaTypes, field)}
+                    theme={selectThemeColors}
+                    defaultValue={null}
+                    placeholder="Select a value"
+                    options={mediaTypes}
+                    className="react-select"
+                    classNamePrefix="select"
+                    onChange={(e) => {
+                      field.onChange(e.value);
+                    }}
+                  />
                 )}
               />
             </Col>
@@ -235,7 +245,7 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                 control={control}
                 rules={{
                   required: true,
-                  validate: (value) => value !== "00:00:00",
+                  validate: (value) => value !== "00:00:00"
                 }}
                 render={({ field }) => (
                   <Cleave
@@ -278,22 +288,27 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Input {...field} type="select">
-                    <option value={null}>Select a value</option>
-                    {colors.map((color) => {
-                      return (
-                        <option
-                          value={color.value}
-                          style={{
-                            backgroundColor: color.value,
-                            color: "black",
-                          }}
-                        >
-                          {color.label}
-                        </option>
-                      );
-                    })}
-                  </Input>
+                  <Select
+                    {...field}
+                    isClearable={false}
+                    styles={{
+                      option: (styles, { data }) => ({
+                        ...styles,
+                        backgroundColor: data.value,
+                        color: "white"
+                      })
+                    }}
+                    value={mapSelectValue(colors, field)}
+                    theme={selectThemeColors}
+                    defaultValue={null}
+                    placeholder="Select a value"
+                    options={colors}
+                    className="react-select"
+                    classNamePrefix="select"
+                    onChange={(e) => {
+                      field.onChange(e.value);
+                    }}
+                  />
                 )}
               />
             </Col>
