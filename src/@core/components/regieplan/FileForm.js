@@ -1,12 +1,9 @@
 // ** Reactstrap Imports
-import { Filter, Image, Music, Search, Video, X } from "react-feather";
+import { Search, X } from "react-feather";
 import AsyncSelect from "react-select/async";
 import {
   Button,
   Col,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
   Form,
   Input,
   InputGroup,
@@ -15,8 +12,7 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
-  Row,
-  UncontrolledButtonDropdown
+  Row
 } from "reactstrap";
 
 // ** Utils
@@ -30,7 +26,7 @@ import colors from "../../../utility/data/colors.json";
 import mediaTypes from "../../../utility/data/mediaTypes.json";
 import { mapSelectValue } from "../../../utility/functions/mapSelectValue";
 
-const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
+const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
   const options = { time: true, timePattern: ["h", "m", "s"] };
   const initialValues = {
     mediaType: data ? data.mediaType : "",
@@ -41,25 +37,15 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
     color: data ? data.color : ""
   };
 
-  const colorOptions = [
-    { id: 1, value: "file1", label: "File 1", fileType: "image" },
-    { id: 2, value: "file2", label: "File 2", fileType: "image" },
-    { id: 4, value: "file3", label: "File 3", fileType: "image" },
-    { id: 3, value: "file4", label: "File 4", fileType: "image" },
-    { id: 5, value: "file5", label: "File 5", fileType: "image" },
-    { id: 6, value: "file6", label: "File 6", fileType: "image" }
-  ];
-
-  const filterColors1 = (inputValue) => {
-    return colorOptions.filter((i) =>
+  const filterFiles = (inputValue) => {
+    const filteredResults = fileList.filter((i) =>
       i.label.toLowerCase().includes(inputValue.toLowerCase())
     );
+    return filteredResults.length > 0 ? filteredResults : fileList;
   };
 
   const loadOptions = (inputValue, callback) => {
-    setTimeout(() => {
-      callback(filterColors1(inputValue));
-    }, 2000);
+    return inputValue ? callback(filterFiles(inputValue)) : fileList;
   };
 
   const {
@@ -81,10 +67,12 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
   const watchAudioValue = watch("mediaType");
 
   const onSubmit = (data) => {
+    console.log(data.media);
     data.id = data.media.id;
     data.name = data.media.label;
     data.media = data.media.fileType;
     data.type = "file";
+    console.log(data);
     onFormSubmit(data);
     toast.success("New Entry Added Successfully.");
     reset(initialValues);
@@ -95,6 +83,13 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
     const val = newValue.replace(/\W/g, "");
     return val;
   };
+
+  // const filterConfig = {
+  //   ignoreCase,
+  //   ignoreAccents,
+  //   trim,
+  //   matchFrom: matchFromStart ? "start" : "any"
+  // };
 
   const CloseBtn = (
     <X className="cursor-pointer ms-auto" size={15} onClick={handleModal} />
@@ -123,9 +118,9 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                 Bild
               </Label>
               <InputGroup className="justify-content-between flex-nowrap">
-                <InputGroupText>
+                {/* <InputGroupText>
                   <Search size={15} />
-                </InputGroupText>
+                </InputGroupText> */}
                 <Controller
                   name="media"
                   rules={{
@@ -133,20 +128,29 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                   }}
                   control={control}
                   render={({ field }) => (
-                    <AsyncSelect
+                    <Select
                       {...field}
-                      isClearable={false}
+                      // defaultValue={colourOptions[0]}
+                      isClearable
+                      isSearchable
                       className="react-select w-100"
-                      classNamePrefix="select"
-                      name="callback-react-select"
-                      loadOptions={loadOptions}
-                      onInputChange={handleInputChange}
-                      defaultOptions
-                      theme={selectThemeColors}
+                      options={fileList}
+                      // filterOption={createFilter(filterConfig)}
                     />
+                    // <AsyncSelect
+                    //   {...field}
+                    //   isClearable={false}
+                    //   className="react-select w-100"
+                    //   classNamePrefix="select"
+                    //   name="callback-react-select"
+                    //   loadOptions={loadOptions}
+                    //   onInputChange={handleInputChange}
+                    //   defaultOptions
+                    //   theme={selectThemeColors}
+                    // />
                   )}
                 />
-                <UncontrolledButtonDropdown>
+                {/* <UncontrolledButtonDropdown>
                   <DropdownToggle color="secondary" caret outline>
                     <Filter size={15} />
                   </DropdownToggle>
@@ -164,7 +168,7 @@ const FileForm = ({ open, handleModal, data, onFormSubmit }) => {
                       <span className="align-middle ms-50">Audio</span>
                     </DropdownItem>
                   </DropdownMenu>
-                </UncontrolledButtonDropdown>
+                </UncontrolledButtonDropdown> */}
               </InputGroup>
             </Col>
             {errors.media && <p className="text-danger">This is required.</p>}

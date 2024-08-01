@@ -3,19 +3,23 @@ import { File, Folder, Printer, Save } from "react-feather";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
 import NewPlan from "../@core/components/regieplan/NewPlan";
 import Schedules from "../@core/components/regieplan/Schedules";
+import ViewPlan from "../@core/components/regieplan/ViewPlan";
 
 const Regieplan = () => {
   const [modal, setModal] = useState(false);
   const [newPlan, setNewPlan] = useState(false);
   const [currentSchedule, setCurrentSchedule] = useState(null);
+  const [openPlan, setOpenPlan] = useState(false);
   const listRef = useRef(null);
+  const [eventId, setEventId] = useState(null);
 
   const handleModal = () => {
     setModal(!modal);
   };
 
   const handleSave = () => {
-    listRef.current.handleSave();
+    listRef.current.handleSave(eventId);
+    setEventId(null);
   };
 
   return (
@@ -35,7 +39,14 @@ const Regieplan = () => {
               <File size={14} />
               <span className="align-middle ms-25">New</span>
             </Button.Ripple>
-            <Button.Ripple size="sm" outline>
+            <Button.Ripple
+              size="sm"
+              outline
+              onClick={() => {
+                setOpenPlan(true);
+                handleModal();
+              }}
+            >
               <Folder size={14} />
               <span className="align-middle ms-25">Open</span>
             </Button.Ripple>
@@ -54,9 +65,9 @@ const Regieplan = () => {
               outline
               onClick={() => {
                 if (listRef.current) {
-                listRef.current.handlePrintData();
-              }
-}}
+                  listRef.current.handlePrintData();
+                }
+              }}
             >
               <Printer size={14} />
               <span className="align-middle ms-25">Print</span>
@@ -84,6 +95,18 @@ const Regieplan = () => {
             onFormSubmit={(plan) => {
               setCurrentSchedule(plan);
               setNewPlan(false);
+            }}
+          />
+        )}
+
+        {openPlan && (
+          <ViewPlan
+            open={modal}
+            handleModal={handleModal}
+            onSelect={(plan) => {
+              setCurrentSchedule(plan);
+              setEventId(plan.id);
+              handleModal();
             }}
           />
         )}

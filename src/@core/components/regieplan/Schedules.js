@@ -28,7 +28,7 @@ import TextForm from "./TextForm";
 
 const Schedules = forwardRef(({ data }, ref) => {
   const [active, setActive] = useState(0);
-  const [entryMethod, setEntryMethod] = useState();
+  const [entryMethod, setEntryMethod] = useState(null);
   const [modal, setModal] = useState(false);
   const [editData, setEditData] = useState(null);
   const [editIndex, setEditIndex] = useState(null);
@@ -43,6 +43,29 @@ const Schedules = forwardRef(({ data }, ref) => {
   ]);
 
   const refs = useRef([]);
+
+  const [fileList, setFileList] = useState([]);
+
+  const fetchFiles = async () => {
+    try {
+      const result = await api.post("file");
+      const tempData = result.data.data.map((item) => ({
+        id: item.id,
+        label: item.title,
+        fileType: item.file_type
+      }));
+      setFileList(tempData);
+      console.log(result.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (fileList.length === 0) {
+      fetchFiles();
+    }
+  }, []);
 
   const toggle = (tab) => {
     if (active !== tab) {
@@ -168,15 +191,24 @@ const Schedules = forwardRef(({ data }, ref) => {
     setPrintData(prepareData(tempPrintData));
   };
 
-  const submit = async () => {
+  const createPlan = async () => {
     const plan = { ...data };
-    plan.status = 'open';
+    plan.status = "open";
     try {
       const result = await api.post("event/store", prepareData(plan));
-      console.log(result);
       toast.success("Event Created Successfully");
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const updatePlan = async () => {};
+
+  const submit = async (id) => {
+    if (!id) {
+      createPlan();
+    } else {
+      updatePlan();
     }
   };
 
@@ -184,8 +216,8 @@ const Schedules = forwardRef(({ data }, ref) => {
     handlePrintData() {
       handlePrint();
     },
-    handleSave() {
-      submit();
+    handleSave(id) {
+      submit(id);
     }
   }));
 
@@ -278,6 +310,7 @@ const Schedules = forwardRef(({ data }, ref) => {
                         handleEdit={(entry, index) => {
                           handleEdit(entry, index);
                         }}
+                        fileList={fileList}
                         data={item.scheduleData}
                         isReverse={item.isReverse}
                         ref={(el) => (refs.current[idx] = el)}
@@ -290,6 +323,7 @@ const Schedules = forwardRef(({ data }, ref) => {
           </div>
           {entryMethod === "file" && (
             <FileForm
+              fileList={fileList}
               open={modal}
               data={editData}
               handleModal={handleModal}
