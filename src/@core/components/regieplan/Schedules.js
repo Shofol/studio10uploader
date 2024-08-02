@@ -80,10 +80,14 @@ const Schedules = forwardRef(({ data }, ref) => {
       refs.current[active].handleEntry(entry);
     }
     setEditIndex(null);
-    setEditData(null);
   };
 
   const handleModal = () => {
+    if (modal) {
+      setTimeout(() => {
+        setEditData(null);
+      }, 100);
+    }
     setModal(!modal);
   };
 
@@ -230,7 +234,9 @@ const Schedules = forwardRef(({ data }, ref) => {
   });
 
   useEffect(() => {
-    printContent();
+    if (printData) {
+      printContent();
+    }
   }, [printData]);
 
   return (
@@ -244,7 +250,12 @@ const Schedules = forwardRef(({ data }, ref) => {
                   {data.title} (Uhrzeit: {data.startTime})
                 </h4>
                 <p>
-                  Runde: {data.round} | Gegner: {data.opponent}
+                  Runde: {data.round} | Gegner:{" "}
+                  {data.opponent
+                    .toUpperCase()
+                    .substring(1, data.opponent.length - 1)
+                    .split("_")
+                    .join(" ")}
                 </p>
               </div>
             )}

@@ -107,6 +107,7 @@ const Regieplan = () => {
               setCurrentSchedule(plan);
               setEventId(plan.id);
               handleModal();
+              setOpenPlan(false);
             }}
           />
         )}

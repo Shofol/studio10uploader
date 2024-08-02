@@ -1,6 +1,7 @@
 // ** Reactstrap Imports
 import { selectThemeColors } from "@utils";
 import Cleave from "cleave.js/react";
+import { useEffect } from "react";
 import { X } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -45,8 +46,13 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
     defaultValues: initialValues
   });
 
+  useEffect(() => {
+    if (data) {
+      reset(data);
+    }
+  }, [data]);
+
   const onSubmit = (data) => {
-    console.log(errors);
     console.log(JSON.stringify(data));
     onFormSubmit(data);
     toast.success("New Entry Created Successfully.");
@@ -119,9 +125,7 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
             {errors.media && <p className="text-danger">This is required.</p>}
 
             <Col sm="12" className="mb-1">
-              <Label className="form-label" for="duration">
-                Ton
-              </Label>
+              <Label className="form-label">Ton</Label>
               <Controller
                 name="mediaType"
                 control={control}
@@ -230,7 +234,21 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
                 <Button className="me-1" color="primary" type="submit">
                   Hinzufügen
                 </Button>
-                <Button outline color="secondary" type="reset">
+                <Button
+                  outline
+                  color="secondary"
+                  onClick={() =>
+                    reset({
+                      ...initialValues,
+                      name: "",
+                      color: "",
+                      comment: "",
+                      duration: "",
+                      mediaType: "",
+                      media: ""
+                    })
+                  }
+                >
                   Abbrechen
                 </Button>
               </div>

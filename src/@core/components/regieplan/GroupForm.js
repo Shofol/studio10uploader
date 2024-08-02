@@ -1,4 +1,5 @@
 // ** Reactstrap Imports
+import { useEffect } from "react";
 import { X } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -35,6 +36,12 @@ const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
   } = useForm({
     defaultValues: initialValues
   });
+
+  useEffect(() => {
+    if (data) {
+      reset(data);
+    }
+  }, [data]);
 
   const onSubmit = (data) => {
     onFormSubmit(data);
@@ -73,9 +80,12 @@ const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
                 name="name"
                 type="text"
                 control={control}
+                rules={{ required: true }}
                 render={({ field }) => <Input {...field} placeholder="Titel" />}
               />
             </Col>
+            {errors.comment && <p className="text-danger">This is required.</p>}
+
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="comment">
                 Komentar
@@ -84,17 +94,31 @@ const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
                 name="comment"
                 type="text"
                 control={control}
+                rules={{ required: true }}
                 render={({ field }) => (
                   <Input {...field} placeholder="Komentar" />
                 )}
               />
             </Col>
+            {errors.comment && <p className="text-danger">This is required.</p>}
+
             <Col sm="12">
               <div className="d-flex justify-content-end mt-1">
                 <Button className="me-1" color="primary" type="submit">
                   Hinzufügen
                 </Button>
-                <Button outline color="secondary" type="reset">
+                <Button
+                  outline
+                  color="secondary"
+                  type="button"
+                  onClick={() => {
+                    reset({
+                      ...initialValues,
+                      comment: "",
+                      name: ""
+                    });
+                  }}
+                >
                   Abbrechen
                 </Button>
               </div>

@@ -93,3 +93,8 @@ $colors: (
 .rdt_TableCell{
   cursor: pointer;
 }
+
+.select__menu .select__menu-list .select__option.select__option--is-selected{
+  background: white !important;
+  color: #6e6b7b !important;
+}

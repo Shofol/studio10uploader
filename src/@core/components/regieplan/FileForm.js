@@ -1,13 +1,11 @@
 // ** Reactstrap Imports
-import { Search, X } from "react-feather";
-import AsyncSelect from "react-select/async";
+import { X } from "react-feather";
 import {
   Button,
   Col,
   Form,
   Input,
   InputGroup,
-  InputGroupText,
   Label,
   Modal,
   ModalBody,
@@ -18,7 +16,7 @@ import {
 // ** Utils
 import { selectThemeColors } from "@utils";
 import Cleave from "cleave.js/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Select from "react-select";
@@ -37,17 +35,8 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
     audio: data ? data.audio : "",
     color: data ? data.color : ""
   };
-
-  const filterFiles = (inputValue) => {
-    const filteredResults = files.filter((i) =>
-      i.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
-    return filteredResults.length > 0 ? filteredResults : files;
-  };
-
-  const loadOptions = (inputValue, callback) => {
-    return inputValue ? callback(filterFiles(inputValue)) : files;
-  };
+  const fileValueRef = useRef();
+  const audioFileValueRef = useRef();
 
   const {
     handleSubmit,
@@ -87,11 +76,6 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
     handleModal();
   };
 
-  const handleInputChange = (newValue) => {
-    const val = newValue.replace(/\W/g, "");
-    return val;
-  };
-
   const CloseBtn = (
     <X className="cursor-pointer ms-auto" size={15} onClick={handleModal} />
   );
@@ -127,11 +111,16 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                   control={control}
                   render={({ field }) => (
                     <Select
-                      {...field}
+                      ref={fileValueRef}
+                      classNamePrefix="select"
                       isClearable
                       isSearchable
-                      className="react-select w-100"
+                      defaultValue={
+                        data ? files.find((item) => item.id === data.id) : null
+                      }
+                      className=" w-100"
                       options={files}
+                      onChange={field.onChange}
                     />
                   )}
                 />
@@ -242,7 +231,6 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                     isClearable={false}
                     value={mapSelectValue(mediaTypes, field)}
                     theme={selectThemeColors}
-                    defaultValue={null}
                     placeholder="Select a value"
                     options={mediaTypes}
                     className="react-select"
@@ -265,24 +253,20 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                     Audio File
                   </Label>
                   <InputGroup className="justify-content-between flex-nowrap">
-                    <InputGroupText>
-                      <Search size={15} />
-                    </InputGroupText>
                     <Controller
                       name="audio"
                       control={control}
                       rules={{ required: true }}
                       render={({ field }) => (
-                        <AsyncSelect
+                        <Select
+                          ref={audioFileValueRef}
                           {...field}
-                          isClearable={false}
+                          isClearable
+                          isSearchable
                           className="react-select w-100"
-                          classNamePrefix="select"
-                          name="callback-react-select"
-                          loadOptions={loadOptions}
-                          onInputChange={handleInputChange}
-                          defaultOptions
-                          theme={selectThemeColors}
+                          options={fileList.filter((item) =>
+                            item.fileType.includes("audio")
+                          )}
                         />
                       )}
                     />
@@ -376,7 +360,25 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                 <Button className="me-1" color="primary" type="submit">
                   Hinzufügen
                 </Button>
-                <Button outline color="secondary" type="reset">
+                <Button
+                  outline
+                  color="secondary"
+                  onClick={() => {
+                    fileValueRef.current.clearValue();
+                    if (audioFileValueRef.current) {
+                      audioFileValueRef.current.clearValue();
+                    }
+                    reset({
+                      ...initialValues,
+                      name: "",
+                      color: "",
+                      comment: "",
+                      duration: "",
+                      mediaType: "",
+                      media: ""
+                    });
+                  }}
+                >
                   Abbrechen
                 </Button>
               </div>
