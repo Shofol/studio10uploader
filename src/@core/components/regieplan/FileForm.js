@@ -18,7 +18,7 @@ import {
 // ** Utils
 import { selectThemeColors } from "@utils";
 import Cleave from "cleave.js/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Select from "react-select";
@@ -28,6 +28,7 @@ import { mapSelectValue } from "../../../utility/functions/mapSelectValue";
 
 const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
   const options = { time: true, timePattern: ["h", "m", "s"] };
+  const [files, setFiles] = useState(fileList);
   const initialValues = {
     mediaType: data ? data.mediaType : "",
     media: data ? data.media : "",
@@ -38,14 +39,14 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
   };
 
   const filterFiles = (inputValue) => {
-    const filteredResults = fileList.filter((i) =>
+    const filteredResults = files.filter((i) =>
       i.label.toLowerCase().includes(inputValue.toLowerCase())
     );
-    return filteredResults.length > 0 ? filteredResults : fileList;
+    return filteredResults.length > 0 ? filteredResults : files;
   };
 
   const loadOptions = (inputValue, callback) => {
-    return inputValue ? callback(filterFiles(inputValue)) : fileList;
+    return inputValue ? callback(filterFiles(inputValue)) : files;
   };
 
   const {
@@ -64,6 +65,14 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
     }
   }, [data]);
 
+  const filterData = (type) => {
+    if (type === "all") {
+      setFiles(fileList);
+    } else {
+      setFiles(fileList.filter((item) => item.fileType.includes(type)));
+    }
+  };
+
   const watchAudioValue = watch("mediaType");
 
   const onSubmit = (data) => {
@@ -72,7 +81,6 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
     data.name = data.media.label;
     data.media = data.media.fileType;
     data.type = "file";
-    console.log(data);
     onFormSubmit(data);
     toast.success("New Entry Added Successfully.");
     reset(initialValues);
@@ -83,13 +91,6 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
     const val = newValue.replace(/\W/g, "");
     return val;
   };
-
-  // const filterConfig = {
-  //   ignoreCase,
-  //   ignoreAccents,
-  //   trim,
-  //   matchFrom: matchFromStart ? "start" : "any"
-  // };
 
   const CloseBtn = (
     <X className="cursor-pointer ms-auto" size={15} onClick={handleModal} />
@@ -118,9 +119,6 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                 Bild
               </Label>
               <InputGroup className="justify-content-between flex-nowrap">
-                {/* <InputGroupText>
-                  <Search size={15} />
-                </InputGroupText> */}
                 <Controller
                   name="media"
                   rules={{
@@ -130,24 +128,11 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                   render={({ field }) => (
                     <Select
                       {...field}
-                      // defaultValue={colourOptions[0]}
                       isClearable
                       isSearchable
                       className="react-select w-100"
-                      options={fileList}
-                      // filterOption={createFilter(filterConfig)}
+                      options={files}
                     />
-                    // <AsyncSelect
-                    //   {...field}
-                    //   isClearable={false}
-                    //   className="react-select w-100"
-                    //   classNamePrefix="select"
-                    //   name="callback-react-select"
-                    //   loadOptions={loadOptions}
-                    //   onInputChange={handleInputChange}
-                    //   defaultOptions
-                    //   theme={selectThemeColors}
-                    // />
                   )}
                 />
                 {/* <UncontrolledButtonDropdown>
@@ -155,15 +140,30 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                     <Filter size={15} />
                   </DropdownToggle>
                   <DropdownMenu>
-                    <DropdownItem className="w-100">
+                    <DropdownItem
+                      className="w-100"
+                      onClick={() => {
+                        filterData("image");
+                      }}
+                    >
                       <Image size={15} />
                       <span className="align-middle ms-50">Image</span>
                     </DropdownItem>
-                    <DropdownItem className="w-100">
+                    <DropdownItem
+                      className="w-100"
+                      onClick={() => {
+                        filterData("video");
+                      }}
+                    >
                       <Video size={15} />
                       <span className="align-middle ms-50">Video</span>
                     </DropdownItem>
-                    <DropdownItem className="w-100">
+                    <DropdownItem
+                      className="w-100"
+                      onClick={() => {
+                        filterData("audio");
+                      }}
+                    >
                       <Music size={15} />
                       <span className="align-middle ms-50">Audio</span>
                     </DropdownItem>
@@ -172,7 +172,61 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
               </InputGroup>
             </Col>
             {errors.media && <p className="text-danger">This is required.</p>}
-
+            <div className="d-flex justify-content-between mb-2">
+              <div className="form-check">
+                <Input
+                  type="radio"
+                  id="fil-all"
+                  name="ex1"
+                  defaultChecked
+                  onChange={() => {
+                    filterData("all");
+                  }}
+                />
+                <Label className="form-check-label" for="fil-all">
+                  All
+                </Label>
+              </div>
+              <div className="form-check">
+                <Input
+                  type="radio"
+                  name="ex1"
+                  id="fill-image"
+                  onChange={() => {
+                    filterData("image");
+                  }}
+                />
+                <Label className="form-check-label" for="fill-image">
+                  Image
+                </Label>
+              </div>
+              <div className="form-check">
+                <Input
+                  type="radio"
+                  name="ex1"
+                  id="fill-video"
+                  onChange={() => {
+                    filterData("video");
+                  }}
+                />
+                <Label className="form-check-label" for="fill-video">
+                  Video
+                </Label>
+              </div>
+              <div className="form-check">
+                <Input
+                  type="radio"
+                  name="ex1"
+                  id="fill-audio"
+                  onChange={() => {
+                    filterData("audio");
+                  }}
+                />
+                <Label className="form-check-label" for="fill-audio">
+                  Audio
+                </Label>
+              </div>
+            </div>
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="mediaType">
                 Ton

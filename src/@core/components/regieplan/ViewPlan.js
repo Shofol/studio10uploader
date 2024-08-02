@@ -1,6 +1,7 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { ChevronDown, Edit, Trash } from "react-feather";
+import toast from "react-hot-toast";
 import ReactPaginate from "react-paginate";
 import {
   Button,
@@ -12,18 +13,20 @@ import {
   ModalFooter,
   ModalHeader
 } from "reactstrap";
-// import data from "../../../utility/data/schedules.json";
 import api from "../../api/api";
 
 const ViewPlan = ({ open, handleModal, onSelect }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [data, setData] = useState([]);
-  // const offset = 10;
+  const offset = 10;
 
-  const fetchData = async () => {
+  const fetchData = async (start = 0) => {
     try {
-      const result = await api.post(`event`);
+      const result = await api.get(`event/list`, {
+        params: { start, per_page: offset }
+      });
+      setTotalPages(result.data.totalPage);
       setData(result.data.data);
     } catch (error) {
       console.error(error);
@@ -35,8 +38,18 @@ const ViewPlan = ({ open, handleModal, onSelect }) => {
   }, []);
 
   const handlePagination = (page) => {
-    // fetchData(page.selected * offset, offset);
+    fetchData(page.selected * offset);
     setCurrentPage(page.selected);
+  };
+
+  const handleDelete = async (entry) => {
+    try {
+      const result = await api.delete(`event/${entry.id}`);
+      toast.success("Plan deleted succesfully");
+      fetchData();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // ** Custom Pagination
@@ -125,9 +138,8 @@ const ViewPlan = ({ open, handleModal, onSelect }) => {
               tag="a"
               href="/"
               className="cursor-pointer"
-              onClick={(e) => {
-                // setSelectedRowToDelete(row);
-                // setDeleteModal(!deleteModal);
+              onClick={() => {
+                handleDelete(row);
               }}
             >
               <Trash size={15} className="text-danger" />
@@ -154,24 +166,25 @@ const ViewPlan = ({ open, handleModal, onSelect }) => {
             <DataTable
               noHeader
               pagination
-              selectableRows
+              // selectableRows
               columns={columns}
               // paginationPerPage={offset}
               className="react-dataTable"
               sortIcon={<ChevronDown size={10} />}
-              // paginationComponent={CustomPagination}
+              paginationComponent={CustomPagination}
+              style={{ cursor: "pointer" }}
               // paginationDefaultPage={currentPage + 1}
-              selectableRowsComponent={BootstrapCheckbox}
+              // selectableRowsComponent={BootstrapCheckbox}
               data={data}
               onRowClicked={(data) => {
                 // setSelectedRowToView(data);
                 // setViewModal(!modal);
                 onSelect(data);
               }}
-              onSelectedRowsChange={(e) => {
-                // setSelectedRowsToDelete(e.selectedRows);
-                console.log(e);
-              }}
+              // onSelectedRowsChange={(e) => {
+              //   // setSelectedRowsToDelete(e.selectedRows);
+              //   console.log(e);
+              // }}
             />
           </div>
         </Card>

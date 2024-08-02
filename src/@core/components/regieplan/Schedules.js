@@ -239,9 +239,14 @@ const Schedules = forwardRef(({ data }, ref) => {
         <CardBody>
           <div className="d-flex justify-content-between align-items-center pb-2">
             {data && (
-              <h4>
-                {data.title} (Uhrzeit: {data.startTime})
-              </h4>
+              <div className="d-flex flex-column">
+                <h4>
+                  {data.title} (Uhrzeit: {data.startTime})
+                </h4>
+                <p>
+                  Runde: {data.round} | Gegner: {data.opponent}
+                </p>
+              </div>
             )}
             {data && (
               <div className="d-flex gap-1">
