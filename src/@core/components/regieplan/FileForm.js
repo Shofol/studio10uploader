@@ -71,7 +71,7 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
     entry.type = "file";
 
     onFormSubmit(entry);
-    if (!data.id) {
+    if (!data) {
       toast.success("New Entry Added Successfully.");
     }
     reset(initialValues);

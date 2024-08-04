@@ -63,7 +63,7 @@ const ScheduleList = forwardRef(
         ? updateReverseStartTime(tempArray, data.startTime)
         : updateStartTime(tempArray, data.startTime);
       setListArr(updatedList);
-      if (index !== undefined && index >= 0) {
+      if (data.id && index !== undefined && index >= 0) {
         updateData(updatedList[index]);
       }
     };
@@ -96,11 +96,13 @@ const ScheduleList = forwardRef(
       const updatedList = isReverse
         ? updateReverseStartTime(tempArray, data.startTime)
         : updateStartTime(tempArray, data.startTime);
-      updateData(updatedList[parentIndex].children[childEditIndex], true);
+      if (data.id && childEditIndex !== null && childEditIndex >= 0) {
+        updateData(updatedList[parentIndex].children[childEditIndex], true);
+        setEditData(null);
+        setSelectedGroupIndex(null);
+        setChildEditIndex(null);
+      }
       setListArr(updatedList);
-      setEditData(null);
-      setSelectedGroupIndex(null);
-      setChildEditIndex(null);
     };
 
     const handleCopy = (entry) => {
@@ -129,7 +131,9 @@ const ScheduleList = forwardRef(
 
     const handleDelete = (index) => {
       const tempArray = [...listArr];
-      deleteEntry(tempArray[index]);
+      if (data.id) {
+        deleteEntry(tempArray[index]);
+      }
       tempArray.splice(index, 1);
       setListArr(
         isReverse
@@ -140,15 +144,19 @@ const ScheduleList = forwardRef(
 
     const handleChildEdit = (entry, index, childIndex) => {
       setEditData(entry);
-      setSelectedGroupIndex(index);
-      setChildEditIndex(childIndex);
+      if (data.id) {
+        setSelectedGroupIndex(index);
+        setChildEditIndex(childIndex);
+      }
       // setEntryMethod(entry.type);
       handleModal();
     };
 
     const handleChildDelete = (index, childIndex) => {
       const tempArray = [...listArr];
-      deleteEntry(tempArray[index].children[childIndex], true);
+      if (data.id) {
+        deleteEntry(tempArray[index].children[childIndex], true);
+      }
       tempArray[index].children.splice(childIndex, 1);
       tempArray[index].duration = updateDuration(tempArray[index].children);
       setListArr(
