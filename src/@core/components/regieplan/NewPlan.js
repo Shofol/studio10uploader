@@ -23,10 +23,12 @@ import { mapSelectValue } from "../../../utility/functions/mapSelectValue";
 
 const NewPlan = ({ open, handleModal, data, onFormSubmit }) => {
   const initialValues = {
+    id: data ? data.id : "",
     title: data ? data.title : "",
     round: data ? data.round : "",
     opponent: data ? data.opponent : "",
     startTime: data ? data.startTime : "",
+    status: data ? data.status : "open",
     schedule: data
       ? data.schedule
       : {
@@ -46,9 +48,10 @@ const NewPlan = ({ open, handleModal, data, onFormSubmit }) => {
     defaultValues: initialValues
   });
   const onSubmit = (data) => {
-    console.log(data);
     onFormSubmit(data);
-    toast.success("New Schedule Created Successfully.");
+    if (!data.id) {
+      toast.success("New Schedule Created Successfully.");
+    }
     handleModal();
   };
 
@@ -172,7 +175,15 @@ const NewPlan = ({ open, handleModal, data, onFormSubmit }) => {
                 <Button
                   outline
                   color="secondary"
-                  onClick={() => reset(initialValues)}
+                  onClick={() =>
+                    reset({
+                      ...initialValues,
+                      title: "",
+                      round: "",
+                      opponent: "",
+                      startTime: ""
+                    })
+                  }
                 >
                   Abbrechen
                 </Button>

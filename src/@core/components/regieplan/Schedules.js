@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState
 } from "react";
-import { Box, File, Type } from "react-feather";
+import { Box, Edit, File, Type } from "react-feather";
 import toast from "react-hot-toast";
 import { useReactToPrint } from "react-to-print";
 import {
@@ -26,7 +26,7 @@ import PrintData from "./PrintData";
 import ScheduleList from "./ScheduleList";
 import TextForm from "./TextForm";
 
-const Schedules = forwardRef(({ data }, ref) => {
+const Schedules = forwardRef(({ data, handlePlanEdit }, ref) => {
   const [active, setActive] = useState(0);
   const [entryMethod, setEntryMethod] = useState(null);
   const [modal, setModal] = useState(false);
@@ -35,11 +35,41 @@ const Schedules = forwardRef(({ data }, ref) => {
   const [printData, setPrintData] = useState(null);
   const printRef = useRef();
   const [scheduleTypes, setScheduleTypes] = useState([
-    { label: "Vor Dem Spiel", value: 0, scheduleData: null, isReverse: true },
-    { label: "1. Halbzeit", value: 1, scheduleData: null, isReverse: false },
-    { label: "Pause", value: 2, scheduleData: null, isReverse: false },
-    { label: "2. Halbzeit", value: 3, scheduleData: null, isReverse: false },
-    { label: "Nach Dem Spiel", value: 4, scheduleData: null, isReverse: false }
+    {
+      label: "Vor Dem Spiel",
+      value: 0,
+      scheduleData: null,
+      isReverse: true,
+      section: "beforeGame"
+    },
+    {
+      label: "1. Halbzeit",
+      value: 1,
+      scheduleData: null,
+      isReverse: false,
+      section: "firstHalf"
+    },
+    {
+      label: "Pause",
+      value: 2,
+      scheduleData: null,
+      isReverse: false,
+      section: "break"
+    },
+    {
+      label: "2. Halbzeit",
+      value: 3,
+      scheduleData: null,
+      isReverse: false,
+      section: "secondHalf"
+    },
+    {
+      label: "Nach Dem Spiel",
+      value: 4,
+      scheduleData: null,
+      isReverse: false,
+      section: "afterGame"
+    }
   ]);
 
   const refs = useRef([]);
@@ -246,9 +276,21 @@ const Schedules = forwardRef(({ data }, ref) => {
           <div className="d-flex justify-content-between align-items-center pb-2">
             {data && (
               <div className="d-flex flex-column">
-                <h4>
-                  {data.title} (Uhrzeit: {data.startTime})
-                </h4>
+                <div className="d-flex align-items-center">
+                  <h4>
+                    {data.title} (Uhrzeit: {data.startTime})
+                  </h4>
+                  <Button.Ripple
+                    className="btn-icon"
+                    style={{ marginTop: "-8px" }}
+                    color="flat-primary"
+                    onClick={() => {
+                      handlePlanEdit();
+                    }}
+                  >
+                    <Edit size={16} />
+                  </Button.Ripple>
+                </div>
                 <p>
                   Runde: {data.round} | Gegner:{" "}
                   {data.opponent
@@ -327,6 +369,7 @@ const Schedules = forwardRef(({ data }, ref) => {
                           handleEdit(entry, index);
                         }}
                         fileList={fileList}
+                        section={item.section}
                         data={item.scheduleData}
                         isReverse={item.isReverse}
                         ref={(el) => (refs.current[idx] = el)}
@@ -348,6 +391,7 @@ const Schedules = forwardRef(({ data }, ref) => {
           )}
           {entryMethod === "group" && (
             <GroupForm
+              fileList={fileList}
               open={modal}
               data={editData}
               handleModal={handleModal}
@@ -356,6 +400,7 @@ const Schedules = forwardRef(({ data }, ref) => {
           )}
           {entryMethod === "text" && (
             <TextForm
+              fileList={fileList}
               open={modal}
               data={editData}
               handleModal={handleModal}

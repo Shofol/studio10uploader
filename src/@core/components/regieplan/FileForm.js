@@ -64,14 +64,16 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
 
   const watchAudioValue = watch("mediaType");
 
-  const onSubmit = (data) => {
-    console.log(data.media);
-    data.id = data.media.id;
-    data.name = data.media.label;
-    data.media = data.media.fileType;
-    data.type = "file";
-    onFormSubmit(data);
-    toast.success("New Entry Added Successfully.");
+  const onSubmit = (entry) => {
+    entry.id = entry.media.id ?? entry.id;
+    entry.name = entry.media.label ?? entry.name;
+    entry.media = entry.media.fileType ?? entry.media;
+    entry.type = "file";
+
+    onFormSubmit(entry);
+    if (!data.id) {
+      toast.success("New Entry Added Successfully.");
+    }
     reset(initialValues);
     handleModal();
   };
@@ -116,7 +118,13 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                       isClearable
                       isSearchable
                       defaultValue={
-                        data ? files.find((item) => item.id === data.id) : null
+                        data
+                          ? files.find(
+                              (item) =>
+                                item.id ===
+                                (data.files_id ? data.files_id : data.id)
+                            )
+                          : null
                       }
                       className=" w-100"
                       options={files}

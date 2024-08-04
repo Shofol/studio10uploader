@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { File, Folder, Printer, Save } from "react-feather";
+import toast from "react-hot-toast";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
+import api from "../@core/api/api";
 import NewPlan from "../@core/components/regieplan/NewPlan";
 import Schedules from "../@core/components/regieplan/Schedules";
 import ViewPlan from "../@core/components/regieplan/ViewPlan";
@@ -14,12 +16,42 @@ const Regieplan = () => {
   const [eventId, setEventId] = useState(null);
 
   const handleModal = () => {
+    if (modal) {
+      setNewPlan(false);
+      setOpenPlan(false);
+    }
     setModal(!modal);
   };
 
   const handleSave = () => {
     listRef.current.handleSave(eventId);
     setEventId(null);
+  };
+
+  const handleEdit = () => {
+    setNewPlan(true);
+    handleModal();
+  };
+
+  const updateEvent = async (plan) => {
+    try {
+      const result = await api.post("event/action", {
+        section: "event",
+        action: "edit",
+        type: "parent",
+        data: {
+          id: plan.id,
+          title: plan.title,
+          round: plan.round,
+          opponent: plan.opponent,
+          status: plan.status,
+          startTime: plan.startTime
+        }
+      });
+      toast.success("Event Updated Successfully");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -32,6 +64,7 @@ const Regieplan = () => {
               size="sm"
               outline
               onClick={() => {
+                setCurrentSchedule(null);
                 handleModal();
                 setNewPlan(true);
               }}
@@ -77,7 +110,11 @@ const Regieplan = () => {
 
         {currentSchedule && (
           <>
-            <Schedules ref={listRef} data={currentSchedule} />
+            <Schedules
+              ref={listRef}
+              data={currentSchedule}
+              handlePlanEdit={() => handleEdit()}
+            />
           </>
         )}
         {!currentSchedule && (
@@ -90,9 +127,13 @@ const Regieplan = () => {
 
         {newPlan && (
           <NewPlan
+            data={currentSchedule}
             open={modal}
             handleModal={handleModal}
             onFormSubmit={(plan) => {
+              if (eventId) {
+                updateEvent(plan);
+              }
               setCurrentSchedule(plan);
               setNewPlan(false);
             }}

@@ -15,15 +15,20 @@ import { formatSeconds } from "../../../utility/functions/formatTime";
 import { updateReverseStartTime } from "../../../utility/functions/updateReverseStartTime";
 import { updateStartTime } from "../../../utility/functions/updateStartTime";
 
+import toast from "react-hot-toast";
+import api from "../../api/api";
 import FileForm from "./FileForm";
 
 const ScheduleList = forwardRef(
-  ({ data, fileList, isReverse, handleEdit }, ref) => {
+  ({ data, fileList, isReverse, handleEdit, section }, ref) => {
     const [listArr, setListArr] = useState([]);
     const dragItem = useRef(null);
     const dragOverItem = useRef(null);
     const [modal, setModal] = useState(false);
     const [selectedGroupIndex, setSelectedGroupIndex] = useState(null);
+    const [childEditIndex, setChildEditIndex] = useState(null);
+    const [editData, setEditData] = useState(null);
+    // const [entryMethod, setEntryMethod] = useState(null);
 
     const handleModal = () => {
       setModal(!modal);
@@ -33,6 +38,20 @@ const ScheduleList = forwardRef(
       setListArr(data.schedule);
     }, [data]);
 
+    const updateData = async (entry, isChildren = false) => {
+      try {
+        await api.post("event/action", {
+          section,
+          action: "edit",
+          category: isChildren ? "children" : "parent",
+          data: entry
+        });
+        toast.success("Entry Updated Successfully");
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     const handleNewEntry = (entry, index) => {
       const tempArray = [...listArr];
       if (index !== undefined && index >= 0) {
@@ -40,11 +59,13 @@ const ScheduleList = forwardRef(
       } else {
         tempArray.push(entry);
       }
-      setListArr(
-        isReverse
-          ? updateReverseStartTime(tempArray, data.startTime)
-          : updateStartTime(tempArray, data.startTime)
-      );
+      const updatedList = isReverse
+        ? updateReverseStartTime(tempArray, data.startTime)
+        : updateStartTime(tempArray, data.startTime);
+      setListArr(updatedList);
+      if (index !== undefined && index >= 0) {
+        updateData(updatedList[index]);
+      }
     };
 
     const updateDuration = (list) => {
@@ -61,15 +82,25 @@ const ScheduleList = forwardRef(
     const handleChildEntry = (entry, index) => {
       const parentIndex = index ? index : selectedGroupIndex;
       const tempArray = [...listArr];
-      tempArray[parentIndex].children.push(entry);
+
+      if (childEditIndex !== null && childEditIndex >= 0) {
+        tempArray[parentIndex].children[childEditIndex] = entry;
+      } else {
+        tempArray[parentIndex].children.push(entry);
+      }
+
       tempArray[parentIndex].duration = updateDuration(
         tempArray[parentIndex].children
       );
-      setListArr(
-        isReverse
-          ? updateReverseStartTime(tempArray, data.startTime)
-          : updateStartTime(tempArray, data.startTime)
-      );
+
+      const updatedList = isReverse
+        ? updateReverseStartTime(tempArray, data.startTime)
+        : updateStartTime(tempArray, data.startTime);
+      updateData(updatedList[parentIndex].children[childEditIndex], true);
+      setListArr(updatedList);
+      setEditData(null);
+      setSelectedGroupIndex(null);
+      setChildEditIndex(null);
     };
 
     const handleCopy = (entry) => {
@@ -82,8 +113,23 @@ const ScheduleList = forwardRef(
       handleChildEntry(entry, index);
     };
 
+    const deleteEntry = async (entry, isChildren = false) => {
+      try {
+        await api.post("event/action", {
+          section,
+          action: "delete",
+          category: isChildren ? "children" : "parent",
+          id: entry.id
+        });
+        toast.success("Entry Deleted Successfully");
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     const handleDelete = (index) => {
       const tempArray = [...listArr];
+      deleteEntry(tempArray[index]);
       tempArray.splice(index, 1);
       setListArr(
         isReverse
@@ -92,8 +138,17 @@ const ScheduleList = forwardRef(
       );
     };
 
+    const handleChildEdit = (entry, index, childIndex) => {
+      setEditData(entry);
+      setSelectedGroupIndex(index);
+      setChildEditIndex(childIndex);
+      // setEntryMethod(entry.type);
+      handleModal();
+    };
+
     const handleChildDelete = (index, childIndex) => {
       const tempArray = [...listArr];
+      deleteEntry(tempArray[index].children[childIndex], true);
       tempArray[index].children.splice(childIndex, 1);
       tempArray[index].duration = updateDuration(tempArray[index].children);
       setListArr(
@@ -195,13 +250,13 @@ const ScheduleList = forwardRef(
                         style={{ width: "100px" }}
                         className={getBgColor(item)}
                       >
-                        {item.mediaType}
+                        {item.type === "group" ? "" : item.mediaType}
                       </td>
                       <td
                         style={{ width: "100px" }}
                         className={getBgColor(item)}
                       >
-                        {item.media}
+                        {item.type === "group" ? "" : item.media}
                       </td>
                       <td
                         style={{ width: "300px" }}
@@ -359,6 +414,13 @@ const ScheduleList = forwardRef(
                                   size="sm"
                                   outline
                                   color="primary"
+                                  onClick={() => {
+                                    handleChildEdit(
+                                      { ...child },
+                                      index,
+                                      childIndex
+                                    );
+                                  }}
                                 >
                                   <Edit size={10} />
                                 </Button.Ripple>
@@ -384,10 +446,12 @@ const ScheduleList = forwardRef(
             </tbody>
           </Table>
         )}
+        {/* entryMethod === "file" */}
         {modal && (
           <FileForm
             fileList={fileList}
             open={modal}
+            data={editData}
             handleModal={handleModal}
             onFormSubmit={(data) => {
               handleChildEntry(data);
@@ -395,6 +459,19 @@ const ScheduleList = forwardRef(
             }}
           />
         )}
+
+        {/* {entryMethod === "text" && (
+          <TextForm
+            fileList={fileList}
+            open={modal}
+            data={editData}
+            handleModal={handleModal}
+            onFormSubmit={(data) => {
+              handleChildEntry(data);
+              handleModal();
+            }}
+          />
+        )} */}
       </>
     );
   }

@@ -1,7 +1,7 @@
 // ** Reactstrap Imports
 import { selectThemeColors } from "@utils";
 import Cleave from "cleave.js/react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { X } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -22,9 +22,8 @@ import media from "../../../utility/data/media.json";
 import mediaTypes from "../../../utility/data/mediaTypes.json";
 import { mapSelectValue } from "../../../utility/functions/mapSelectValue";
 
-const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
+const TextForm = ({ open, handleModal, data, onFormSubmit, fileList }) => {
   const options = { time: true, timePattern: ["h", "m", "s"] };
-
   const initialValues = {
     id: data ? data.id : "",
     type: "text",
@@ -41,10 +40,14 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
     handleSubmit,
     control,
     reset,
+    watch,
     formState: { errors }
   } = useForm({
     defaultValues: initialValues
   });
+
+  const watchAudioValue = watch("mediaType");
+  const audioFileValueRef = useRef();
 
   useEffect(() => {
     if (data) {
@@ -152,6 +155,38 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
               <p className="text-danger">This is required.</p>
             )}
 
+            {watchAudioValue === "audio" && (
+              <>
+                <Col sm="12" className="mb-1">
+                  <Label className="form-label" for="audio">
+                    Audio File
+                  </Label>
+                  <InputGroup className="justify-content-between flex-nowrap">
+                    <Controller
+                      name="audio"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field }) => (
+                        <Select
+                          ref={audioFileValueRef}
+                          {...field}
+                          isClearable
+                          isSearchable
+                          className="react-select w-100"
+                          options={fileList.filter((item) =>
+                            item.fileType.includes("audio")
+                          )}
+                        />
+                      )}
+                    />
+                  </InputGroup>
+                </Col>
+                {errors.audio && (
+                  <p className="text-danger">This is required.</p>
+                )}
+              </>
+            )}
+
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="duration">
                 Dauer
@@ -237,7 +272,10 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
                 <Button
                   outline
                   color="secondary"
-                  onClick={() =>
+                  onClick={() => {
+                    if (audioFileValueRef.current) {
+                      audioFileValueRef.current.clearValue();
+                    }
                     reset({
                       ...initialValues,
                       name: "",
@@ -246,8 +284,8 @@ const TextForm = ({ open, handleModal, data, onFormSubmit }) => {
                       duration: "",
                       mediaType: "",
                       media: ""
-                    })
-                  }
+                    });
+                  }}
                 >
                   Abbrechen
                 </Button>
