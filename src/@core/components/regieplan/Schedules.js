@@ -26,7 +26,7 @@ import PrintData from "./PrintData";
 import ScheduleList from "./ScheduleList";
 import TextForm from "./TextForm";
 
-const Schedules = forwardRef(({ data, handlePlanEdit }, ref) => {
+const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
   const [active, setActive] = useState(0);
   const [entryMethod, setEntryMethod] = useState(null);
   const [modal, setModal] = useState(false);
@@ -85,7 +85,6 @@ const Schedules = forwardRef(({ data, handlePlanEdit }, ref) => {
         fileType: item.file_type
       }));
       setFileList(tempData);
-      console.log(result.data.data);
     } catch (error) {
       console.error(error);
     }
@@ -147,34 +146,57 @@ const Schedules = forwardRef(({ data, handlePlanEdit }, ref) => {
   const mapData = () => {
     const tempData = { ...data };
     // update before game data
-    const beforGameData = {};
-    beforGameData.title = tempData.title;
-    beforGameData.startTime = tempData.startTime;
-    beforGameData.schedule = tempData.schedule.beforeGame;
+    const beforGameData = {
+      ...tempData,
+      schedule: tempData.schedule.beforeGame
+    };
+    // beforGameData.title = tempData.title;
+    // beforGameData.startTime = tempData.startTime;
+    // beforGameData.schedule = tempData.schedule.beforeGame;
 
     // update first half game data
-    const firstHalfData = {};
-    firstHalfData.title = tempData.title;
-    firstHalfData.startTime = tempData.startTime;
-    firstHalfData.schedule = tempData.schedule.firstHalf;
+    // const firstHalfData = {};
+    // firstHalfData.title = tempData.title;
+    // firstHalfData.startTime = tempData.startTime;
+    // firstHalfData.schedule = tempData.schedule.firstHalf;
+    const firstHalfData = {
+      ...tempData,
+      schedule: tempData.schedule.firstHalf
+    };
 
     // update game break data
-    const pauseData = {};
-    pauseData.title = tempData.title;
-    pauseData.startTime = calculateTime(0, 45, 0, tempData.startTime);
-    pauseData.schedule = tempData.schedule.break;
+    const pauseData = {
+      ...tempData,
+      startTime: calculateTime(0, 45, 0, tempData.startTime),
+      schedule: tempData.schedule.break
+    };
+
+    // const pauseData = {};
+    // pauseData.title = tempData.title;
+    // pauseData.startTime = calculateTime(0, 45, 0, tempData.startTime);
+    // pauseData.schedule = tempData.schedule.break;
 
     // update first half game data
-    const secondHalfData = {};
-    secondHalfData.title = tempData.title;
-    secondHalfData.startTime = calculateTime(0, 60, 0, tempData.startTime);
-    secondHalfData.schedule = tempData.schedule.secondHalf;
+    const secondHalfData = {
+      ...tempData,
+      startTime: calculateTime(0, 60, 0, tempData.startTime),
+      schedule: tempData.schedule.secondHalf
+    };
+    // const secondHalfData = {};
+    // secondHalfData.title = tempData.title;
+    // secondHalfData.startTime = calculateTime(0, 60, 0, tempData.startTime);
+    // secondHalfData.schedule = tempData.schedule.secondHalf;
 
     // update first half game data
-    const afterGameData = {};
-    afterGameData.title = tempData.title;
-    afterGameData.startTime = calculateTime(0, 105, 0, tempData.startTime);
-    afterGameData.schedule = tempData.schedule.afterGame;
+    // const afterGameData = {};
+    // afterGameData.title = tempData.title;
+    // afterGameData.startTime = calculateTime(0, 105, 0, tempData.startTime);
+    // afterGameData.schedule = tempData.schedule.afterGame;
+    const afterGameData = {
+      ...tempData,
+      startTime: calculateTime(0, 105, 0, tempData.startTime),
+      schedule: tempData.schedule.afterGame
+    };
 
     const tempArray = [...scheduleTypes];
     tempArray[0].scheduleData = beforGameData;
@@ -231,18 +253,15 @@ const Schedules = forwardRef(({ data, handlePlanEdit }, ref) => {
     try {
       const result = await api.post("event/store", prepareData(plan));
       toast.success("Event Created Successfully");
+      onSaveSuccess();
     } catch (error) {
       console.error(error);
     }
   };
 
-  const updatePlan = async () => {};
-
   const submit = async (id) => {
     if (!id) {
       createPlan();
-    } else {
-      updatePlan();
     }
   };
 

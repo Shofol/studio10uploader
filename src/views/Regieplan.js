@@ -83,16 +83,18 @@ const Regieplan = () => {
               <Folder size={14} />
               <span className="align-middle ms-25">Open</span>
             </Button.Ripple>
-            <Button.Ripple
-              size="sm"
-              outline
-              onClick={() => {
-                handleSave();
-              }}
-            >
-              <Save size={14} />
-              <span className="align-middle ms-25">Save</span>
-            </Button.Ripple>
+            {currentSchedule && !currentSchedule.id && (
+              <Button.Ripple
+                size="sm"
+                outline
+                onClick={() => {
+                  handleSave();
+                }}
+              >
+                <Save size={14} />
+                <span className="align-middle ms-25">Save</span>
+              </Button.Ripple>
+            )}
             <Button.Ripple
               size="sm"
               outline
@@ -114,6 +116,9 @@ const Regieplan = () => {
               ref={listRef}
               data={currentSchedule}
               handlePlanEdit={() => handleEdit()}
+              onSaveSuccess={() => {
+                setCurrentSchedule(null);
+              }}
             />
           </>
         )}
@@ -134,7 +139,7 @@ const Regieplan = () => {
               if (eventId) {
                 updateEvent(plan);
               }
-              setCurrentSchedule(plan);
+              setCurrentSchedule({ ...plan });
               setNewPlan(false);
             }}
           />

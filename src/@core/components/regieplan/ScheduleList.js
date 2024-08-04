@@ -35,7 +35,11 @@ const ScheduleList = forwardRef(
     };
 
     useEffect(() => {
-      setListArr(data.schedule);
+      setListArr(
+        isReverse
+          ? updateReverseStartTime(data.schedule, data.startTime)
+          : updateStartTime(data.schedule, data.startTime)
+      );
     }, [data]);
 
     const updateData = async (entry, isChildren = false) => {

@@ -159,7 +159,13 @@ const NewPlan = ({ open, handleModal, data, onFormSubmit }) => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Input {...field} type="time" step={1} className="h4" />
+                  <Input
+                    disabled={data?.id >= 0}
+                    {...field}
+                    type="time"
+                    step={1}
+                    className="h4"
+                  />
                 )}
               />
             </Col>

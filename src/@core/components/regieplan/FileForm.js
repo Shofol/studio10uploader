@@ -43,6 +43,7 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
     control,
     reset,
     watch,
+    setValue,
     formState: { errors }
   } = useForm({
     defaultValues: initialValues
@@ -51,6 +52,12 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
   useEffect(() => {
     if (data) {
       reset(data);
+      if (data.audio) {
+        setValue(
+          "audio",
+          fileList.find((item) => item.id === data.audio)
+        );
+      }
     }
   }, [data]);
 
@@ -69,6 +76,10 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
     entry.name = entry.media.label ?? entry.name;
     entry.media = entry.media.fileType ?? entry.media;
     entry.type = "file";
+
+    if (watchAudioValue === "audio") {
+      entry.audio = entry.audio.id;
+    }
 
     onFormSubmit(entry);
     if (!data) {
@@ -275,6 +286,11 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                           options={fileList.filter((item) =>
                             item.fileType.includes("audio")
                           )}
+                          defaultValue={
+                            data
+                              ? fileList.find((item) => item.id === data.audio)
+                              : null
+                          }
                         />
                       )}
                     />

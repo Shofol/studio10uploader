@@ -11,6 +11,7 @@ import {
   Col,
   Form,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
@@ -41,6 +42,7 @@ const TextForm = ({ open, handleModal, data, onFormSubmit, fileList }) => {
     control,
     reset,
     watch,
+    setValue,
     formState: { errors }
   } = useForm({
     defaultValues: initialValues
@@ -52,11 +54,19 @@ const TextForm = ({ open, handleModal, data, onFormSubmit, fileList }) => {
   useEffect(() => {
     if (data) {
       reset(data);
+      if (data.audio) {
+        setValue(
+          "audio",
+          fileList.find((item) => item.id === data.audio)
+        );
+      }
     }
   }, [data]);
 
   const onSubmit = (data) => {
-    console.log(JSON.stringify(data));
+    if (watchAudioValue === "audio") {
+      data.audio = data.audio.id;
+    }
     onFormSubmit(data);
     toast.success("New Entry Created Successfully.");
     handleModal();
@@ -171,7 +181,7 @@ const TextForm = ({ open, handleModal, data, onFormSubmit, fileList }) => {
                           ref={audioFileValueRef}
                           {...field}
                           isClearable
-                          isSearchable
+                          // isSearchable
                           className="react-select w-100"
                           options={fileList.filter((item) =>
                             item.fileType.includes("audio")
