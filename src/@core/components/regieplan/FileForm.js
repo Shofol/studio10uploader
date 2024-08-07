@@ -10,7 +10,7 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
-  Row
+  Row,
 } from "reactstrap";
 
 // ** Utils
@@ -33,10 +33,11 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
     duration: data ? data.duration : "",
     comment: data ? data.comment : "",
     audio: data ? data.audio : "",
-    color: data ? data.color : ""
+    color: data ? data.color : "",
   };
   const fileValueRef = useRef();
   const audioFileValueRef = useRef();
+  const [isImage, setIsImage] = useState(true);
 
   const {
     handleSubmit,
@@ -44,9 +45,9 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
     reset,
     watch,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm({
-    defaultValues: initialValues
+    defaultValues: initialValues,
   });
 
   useEffect(() => {
@@ -119,7 +120,7 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                 <Controller
                   name="media"
                   rules={{
-                    required: true
+                    required: true,
                   }}
                   control={control}
                   render={({ field }) => (
@@ -139,44 +140,19 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                       }
                       className=" w-100"
                       options={files}
-                      onChange={field.onChange}
+                      onChange={(item) => {
+                        if (!item.fileType.includes("image")) {
+                          setIsImage(false);
+                          setValue("duration", item.duration);
+                        } else {
+                          setIsImage(true);
+                          setValue("duration", "00:00:00");
+                        }
+                        field.onChange(item);
+                      }}
                     />
                   )}
                 />
-                {/* <UncontrolledButtonDropdown>
-                  <DropdownToggle color="secondary" caret outline>
-                    <Filter size={15} />
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem
-                      className="w-100"
-                      onClick={() => {
-                        filterData("image");
-                      }}
-                    >
-                      <Image size={15} />
-                      <span className="align-middle ms-50">Image</span>
-                    </DropdownItem>
-                    <DropdownItem
-                      className="w-100"
-                      onClick={() => {
-                        filterData("video");
-                      }}
-                    >
-                      <Video size={15} />
-                      <span className="align-middle ms-50">Video</span>
-                    </DropdownItem>
-                    <DropdownItem
-                      className="w-100"
-                      onClick={() => {
-                        filterData("audio");
-                      }}
-                    >
-                      <Music size={15} />
-                      <span className="align-middle ms-50">Audio</span>
-                    </DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledButtonDropdown> */}
               </InputGroup>
             </Col>
             {errors.media && <p className="text-danger">This is required.</p>}
@@ -251,7 +227,11 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                     value={mapSelectValue(mediaTypes, field)}
                     theme={selectThemeColors}
                     placeholder="Select a value"
-                    options={mediaTypes}
+                    options={
+                      isImage
+                        ? mediaTypes
+                        : mediaTypes.slice(0, mediaTypes.length - 1)
+                    }
                     className="react-select"
                     classNamePrefix="select"
                     onChange={(e) => {
@@ -311,10 +291,11 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                 control={control}
                 rules={{
                   required: true,
-                  validate: (value) => value !== "00:00:00"
+                  validate: (value) => value !== "00:00:00",
                 }}
                 render={({ field }) => (
                   <Cleave
+                    disabled={!isImage}
                     {...field}
                     className="form-control"
                     placeholder="12:00:00"
@@ -335,14 +316,14 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
               <Controller
                 name="comment"
                 type="text"
-                rules={{ required: true }}
+                // rules={{ required: true }}
                 control={control}
                 render={({ field }) => (
                   <Input {...field} type="text" placeholder="Komentar" />
                 )}
               />
             </Col>
-            {errors.comment && <p className="text-danger">This is required.</p>}
+            {/* {errors.comment && <p className="text-danger">This is required.</p>} */}
 
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="color">
@@ -352,7 +333,6 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                 name="color"
                 type="text"
                 control={control}
-                rules={{ required: true }}
                 render={({ field }) => (
                   <Select
                     {...field}
@@ -361,8 +341,8 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                       option: (styles, { data }) => ({
                         ...styles,
                         backgroundColor: data.value,
-                        color: "white"
-                      })
+                        color: "white",
+                      }),
                     }}
                     value={mapSelectValue(colors, field)}
                     theme={selectThemeColors}
@@ -399,7 +379,7 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                       comment: "",
                       duration: "",
                       mediaType: "",
-                      media: ""
+                      media: "",
                     });
                   }}
                 >

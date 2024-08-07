@@ -4,7 +4,7 @@ import {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState
+  useState,
 } from "react";
 import { Copy, Edit, File, Trash } from "react-feather";
 
@@ -42,17 +42,27 @@ const ScheduleList = forwardRef(
       );
     }, [data]);
 
-    const updateData = async (entry, isChildren = false) => {
+    const updateData = async (entry, action, isChildren = false) => {
       try {
         await api.post("event/action", {
           section,
-          action: "edit",
+          action,
+          eventId: data.id ? data.id : null,
           category: isChildren ? "children" : "parent",
-          data: entry
+          data: entry,
         });
         toast.success("Entry Updated Successfully");
       } catch (error) {
         console.error(error);
+      }
+    };
+
+    const handleEditData = (index, entry, updatedList) => {
+      if (data.id && index !== undefined && index >= 0) {
+        updateData(updatedList[index], "edit");
+      }
+      if (data.id && (index === undefined || index === null)) {
+        updateData(entry, "add");
       }
     };
 
@@ -61,15 +71,13 @@ const ScheduleList = forwardRef(
       if (index !== undefined && index >= 0) {
         tempArray[index] = entry;
       } else {
-        tempArray.push(entry);
+        tempArray.push({ ...entry, itemOrder: tempArray.length });
       }
       const updatedList = isReverse
         ? updateReverseStartTime(tempArray, data.startTime)
         : updateStartTime(tempArray, data.startTime);
       setListArr(updatedList);
-      if (data.id && index !== undefined && index >= 0) {
-        updateData(updatedList[index]);
-      }
+      handleEditData(index, entry, updatedList);
     };
 
     const updateDuration = (list) => {
@@ -83,6 +91,30 @@ const ScheduleList = forwardRef(
       return formatSeconds(seconds);
     };
 
+    const handleEditChildData = (
+      updatedList,
+      parentIndex,
+      entry,
+      tempArray
+    ) => {
+      if (data.id && childEditIndex !== null && childEditIndex >= 0) {
+        updateData(
+          updatedList[parentIndex].children[childEditIndex],
+          "edit",
+          true
+        );
+        setEditData(null);
+        setSelectedGroupIndex(null);
+        setChildEditIndex(null);
+      }
+      if (data.id && childEditIndex === null) {
+        const tempData = { ...entry };
+        tempData.parentId = tempArray[parentIndex].id;
+        tempData.itemOrder = tempArray[parentIndex].children.length;
+        updateData(tempData, "add", true);
+      }
+    };
+
     const handleChildEntry = (entry, index) => {
       const parentIndex = index ? index : selectedGroupIndex;
       const tempArray = [...listArr];
@@ -90,7 +122,10 @@ const ScheduleList = forwardRef(
       if (childEditIndex !== null && childEditIndex >= 0) {
         tempArray[parentIndex].children[childEditIndex] = entry;
       } else {
-        tempArray[parentIndex].children.push(entry);
+        tempArray[parentIndex].children.push({
+          ...entry,
+          itemOrder: tempArray[parentIndex].children.length,
+        });
       }
 
       tempArray[parentIndex].duration = updateDuration(
@@ -100,12 +135,8 @@ const ScheduleList = forwardRef(
       const updatedList = isReverse
         ? updateReverseStartTime(tempArray, data.startTime)
         : updateStartTime(tempArray, data.startTime);
-      if (data.id && childEditIndex !== null && childEditIndex >= 0) {
-        updateData(updatedList[parentIndex].children[childEditIndex], true);
-        setEditData(null);
-        setSelectedGroupIndex(null);
-        setChildEditIndex(null);
-      }
+
+      handleEditChildData(updatedList, parentIndex, entry, tempArray);
       setListArr(updatedList);
     };
 
@@ -125,7 +156,7 @@ const ScheduleList = forwardRef(
           section,
           action: "delete",
           category: isChildren ? "children" : "parent",
-          id: entry.id
+          id: entry.id,
         });
         toast.success("Entry Deleted Successfully");
       } catch (error) {
@@ -177,14 +208,24 @@ const ScheduleList = forwardRef(
 
       getData() {
         return listArr;
-      }
+      },
     }));
 
     const swap = (array) => {
       const tempArray = [...array];
+      const dragItemOrder = tempArray[dragItem.current].itemOrder;
+      const dragOverItemOrder = tempArray[dragOverItem.current].itemOrder;
+
       const temp = tempArray[dragItem.current];
-      tempArray[dragItem.current] = tempArray[dragOverItem.current];
-      tempArray[dragOverItem.current] = temp;
+      tempArray[dragItem.current] = {
+        ...tempArray[dragOverItem.current],
+        itemOrder: dragItemOrder,
+      };
+      tempArray[dragOverItem.current] = {
+        ...temp,
+        itemOrder: dragOverItemOrder,
+      };
+
       return tempArray;
     };
 
@@ -237,224 +278,230 @@ const ScheduleList = forwardRef(
               </tr>
             </thead>
             <tbody>
-              {listArr.map((item, index) => {
-                return (
-                  <>
-                    <tr
-                      key={item.name}
-                      draggable
-                      onDragStart={() => (dragItem.current = index)}
-                      onDragEnter={() => (dragOverItem.current = index)}
-                      onDragEnd={handleSort}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                      }}
-                    >
-                      <td
-                        style={{
-                          width: "100px"
+              {listArr
+                .sort((prev, next) => next.itemOrder - prev.itemOrder)
+                .map((item, index) => {
+                  return (
+                    <>
+                      <tr
+                        key={item.name}
+                        draggable
+                        onDragStart={() => (dragItem.current = index)}
+                        onDragEnter={() => (dragOverItem.current = index)}
+                        onDragEnd={handleSort}
+                        onDragOver={(e) => {
+                          e.preventDefault();
                         }}
-                        className={getBgColor(item)}
                       >
-                        {index + 1}
-                      </td>
-                      <td
-                        style={{ width: "100px" }}
-                        className={getBgColor(item)}
-                      >
-                        {item.type === "group" ? "" : item.mediaType}
-                      </td>
-                      <td
-                        style={{ width: "100px" }}
-                        className={getBgColor(item)}
-                      >
-                        {item.type === "group" ? "" : item.media}
-                      </td>
-                      <td
-                        style={{ width: "300px" }}
-                        className={getBgColor(item)}
-                      >
-                        {item.startTime}
-                      </td>
-                      <td
-                        style={{ width: "100px" }}
-                        className={getBgColor(item)}
-                      >
-                        {item.duration}
-                      </td>
-                      <td
-                        style={{ width: "400px" }}
-                        className={getBgColor(item)}
-                      >
-                        {item.name}
-                      </td>
-                      <td
-                        style={{ width: "300px" }}
-                        className={getBgColor(item)}
-                      >
-                        {item.comment}
-                      </td>
+                        <td
+                          style={{
+                            width: "100px",
+                          }}
+                          className={getBgColor(item)}
+                        >
+                          {index + 1}
+                        </td>
+                        <td
+                          style={{ width: "100px" }}
+                          className={getBgColor(item)}
+                        >
+                          {item.type === "group" ? "" : item.mediaType}
+                        </td>
+                        <td
+                          style={{ width: "100px" }}
+                          className={getBgColor(item)}
+                        >
+                          {item.type === "group" ? "" : item.media}
+                        </td>
+                        <td
+                          style={{ width: "300px" }}
+                          className={getBgColor(item)}
+                        >
+                          {item.startTime}
+                        </td>
+                        <td
+                          style={{ width: "100px" }}
+                          className={getBgColor(item)}
+                        >
+                          {item.duration}
+                        </td>
+                        <td
+                          style={{ width: "400px" }}
+                          className={getBgColor(item)}
+                        >
+                          {item.name}
+                        </td>
+                        <td
+                          style={{ width: "300px" }}
+                          className={getBgColor(item)}
+                        >
+                          {item.comment}
+                        </td>
 
-                      <td>
-                        <div className="d-flex gap-1">
-                          {item.type === "group" && (
+                        <td>
+                          <div className="d-flex gap-1">
+                            {item.type === "group" && (
+                              <Button.Ripple
+                                className="btn-icon"
+                                size="sm"
+                                outline
+                                color="primary"
+                                onClick={() => {
+                                  setSelectedGroupIndex(index);
+                                  handleModal(!modal);
+                                }}
+                              >
+                                <File size={10} />
+                              </Button.Ripple>
+                            )}
                             <Button.Ripple
                               className="btn-icon"
                               size="sm"
                               outline
                               color="primary"
                               onClick={() => {
-                                setSelectedGroupIndex(index);
-                                handleModal(!modal);
+                                handleCopy({ ...item });
                               }}
                             >
-                              <File size={10} />
+                              <Copy size={10} />
                             </Button.Ripple>
-                          )}
-                          <Button.Ripple
-                            className="btn-icon"
-                            size="sm"
-                            outline
-                            color="primary"
-                            onClick={() => {
-                              handleCopy({ ...item });
-                            }}
-                          >
-                            <Copy size={10} />
-                          </Button.Ripple>
-                          <Button.Ripple
-                            className="btn-icon"
-                            size="sm"
-                            outline
-                            color="primary"
-                            onClick={() => {
-                              handleEdit({ ...item }, index);
-                            }}
-                          >
-                            <Edit size={10} />
-                          </Button.Ripple>
-                          <Button.Ripple
-                            className="btn-icon"
-                            size="sm"
-                            outline
-                            color="primary"
-                            onClick={() => handleDelete(index)}
-                          >
-                            <Trash size={10} />
-                          </Button.Ripple>
-                        </div>
-                      </td>
-                    </tr>
-                    {item.children &&
-                      item.children.length > 0 &&
-                      item.children.map((child, childIndex) => {
-                        return (
-                          <tr
-                            key={childIndex + 1}
-                            draggable
-                            onDragStart={() => (dragItem.current = childIndex)}
-                            onDragEnter={() =>
-                              (dragOverItem.current = childIndex)
-                            }
-                            onDragEnd={() =>
-                              handleChildSort(index, item.children)
-                            }
-                            onDragOver={(e) => {
-                              e.preventDefault();
-                            }}
-                          >
-                            <td
-                              style={{
-                                width: "100px",
-                                paddingLeft: "36px"
+                            <Button.Ripple
+                              className="btn-icon"
+                              size="sm"
+                              outline
+                              color="primary"
+                              onClick={() => {
+                                handleEdit({ ...item }, index);
                               }}
-                              className={getBgColor(child)}
                             >
-                              {index + 1}.{childIndex + 1}
-                            </td>
-                            <td
-                              style={{ width: "100px" }}
-                              className={getBgColor(child)}
+                              <Edit size={10} />
+                            </Button.Ripple>
+                            <Button.Ripple
+                              className="btn-icon"
+                              size="sm"
+                              outline
+                              color="primary"
+                              onClick={() => handleDelete(index)}
                             >
-                              {child.mediaType}
-                            </td>
-                            <td
-                              style={{ width: "100px" }}
-                              className={getBgColor(child)}
-                            >
-                              {child.media}
-                            </td>
-                            <td
-                              style={{ width: "100px" }}
-                              className={getBgColor(child)}
-                            >
-                              {child.startTime}
-                            </td>
-                            <td
-                              style={{ width: "100px" }}
-                              className={getBgColor(child)}
-                            >
-                              {child.duration}
-                            </td>
-                            <td
-                              style={{ width: "300px" }}
-                              className={getBgColor(child)}
-                            >
-                              {child.name}
-                            </td>
-                            <td
-                              style={{ width: "300px" }}
-                              className={getBgColor(child)}
-                            >
-                              {child.comment}
-                            </td>
-                            <td>
-                              <div className="d-flex gap-1">
-                                <Button.Ripple
-                                  className="btn-icon"
-                                  size="sm"
-                                  outline
-                                  color="primary"
-                                  onClick={() => {
-                                    handleChildCopy({ ...child }, index);
+                              <Trash size={10} />
+                            </Button.Ripple>
+                          </div>
+                        </td>
+                      </tr>
+                      {item.children &&
+                        item.children.length > 0 &&
+                        item.children
+                          .sort((prev, next) => next.itemOrder - prev.itemOrder)
+                          .map((child, childIndex) => {
+                            return (
+                              <tr
+                                key={childIndex + 1}
+                                draggable
+                                onDragStart={() =>
+                                  (dragItem.current = childIndex)
+                                }
+                                onDragEnter={() =>
+                                  (dragOverItem.current = childIndex)
+                                }
+                                onDragEnd={() =>
+                                  handleChildSort(index, item.children)
+                                }
+                                onDragOver={(e) => {
+                                  e.preventDefault();
+                                }}
+                              >
+                                <td
+                                  style={{
+                                    width: "100px",
+                                    paddingLeft: "36px",
                                   }}
+                                  className={getBgColor(child)}
                                 >
-                                  <Copy size={10} />
-                                </Button.Ripple>
-                                <Button.Ripple
-                                  className="btn-icon"
-                                  size="sm"
-                                  outline
-                                  color="primary"
-                                  onClick={() => {
-                                    handleChildEdit(
-                                      { ...child },
-                                      index,
-                                      childIndex
-                                    );
-                                  }}
+                                  {index + 1}.{childIndex + 1}
+                                </td>
+                                <td
+                                  style={{ width: "100px" }}
+                                  className={getBgColor(child)}
                                 >
-                                  <Edit size={10} />
-                                </Button.Ripple>
-                                <Button.Ripple
-                                  className="btn-icon"
-                                  size="sm"
-                                  outline
-                                  color="primary"
-                                  onClick={() =>
-                                    handleChildDelete(index, childIndex)
-                                  }
+                                  {child.mediaType}
+                                </td>
+                                <td
+                                  style={{ width: "100px" }}
+                                  className={getBgColor(child)}
                                 >
-                                  <Trash size={10} />
-                                </Button.Ripple>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                  </>
-                );
-              })}
+                                  {child.media}
+                                </td>
+                                <td
+                                  style={{ width: "100px" }}
+                                  className={getBgColor(child)}
+                                >
+                                  {child.startTime}
+                                </td>
+                                <td
+                                  style={{ width: "100px" }}
+                                  className={getBgColor(child)}
+                                >
+                                  {child.duration}
+                                </td>
+                                <td
+                                  style={{ width: "300px" }}
+                                  className={getBgColor(child)}
+                                >
+                                  {child.name}
+                                </td>
+                                <td
+                                  style={{ width: "300px" }}
+                                  className={getBgColor(child)}
+                                >
+                                  {child.comment}
+                                </td>
+                                <td>
+                                  <div className="d-flex gap-1">
+                                    <Button.Ripple
+                                      className="btn-icon"
+                                      size="sm"
+                                      outline
+                                      color="primary"
+                                      onClick={() => {
+                                        handleChildCopy({ ...child }, index);
+                                      }}
+                                    >
+                                      <Copy size={10} />
+                                    </Button.Ripple>
+                                    <Button.Ripple
+                                      className="btn-icon"
+                                      size="sm"
+                                      outline
+                                      color="primary"
+                                      onClick={() => {
+                                        handleChildEdit(
+                                          { ...child },
+                                          index,
+                                          childIndex
+                                        );
+                                      }}
+                                    >
+                                      <Edit size={10} />
+                                    </Button.Ripple>
+                                    <Button.Ripple
+                                      className="btn-icon"
+                                      size="sm"
+                                      outline
+                                      color="primary"
+                                      onClick={() =>
+                                        handleChildDelete(index, childIndex)
+                                      }
+                                    >
+                                      <Trash size={10} />
+                                    </Button.Ripple>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                    </>
+                  );
+                })}
             </tbody>
           </Table>
         )}

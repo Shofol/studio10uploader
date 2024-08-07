@@ -12,7 +12,7 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
-  Row
+  Row,
 } from "reactstrap";
 
 // ** Utils
@@ -27,15 +27,15 @@ const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
     duration: data ? data.duration : "00:00:00",
     comment: data ? data.comment : "",
     startTime: data ? data.startTime : "",
-    children: data ? data.children : []
+    children: data ? data.children : [],
   };
   const {
     handleSubmit,
     control,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm({
-    defaultValues: initialValues
+    defaultValues: initialValues,
   });
 
   useEffect(() => {
@@ -95,13 +95,13 @@ const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
                 name="comment"
                 type="text"
                 control={control}
-                rules={{ required: true }}
+                // rules={{ required: true }}
                 render={({ field }) => (
                   <Input {...field} placeholder="Komentar" />
                 )}
               />
             </Col>
-            {errors.comment && <p className="text-danger">This is required.</p>}
+            {/* {errors.comment && <p className="text-danger">This is required.</p>} */}
 
             <Col sm="12">
               <div className="d-flex justify-content-end mt-1">
@@ -116,7 +116,7 @@ const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
                     reset({
                       ...initialValues,
                       comment: "",
-                      name: ""
+                      name: "",
                     });
                   }}
                 >

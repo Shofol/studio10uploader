@@ -247,7 +247,6 @@ const TextForm = ({ open, handleModal, data, onFormSubmit, fileList }) => {
                 name="color"
                 type="text"
                 control={control}
-                rules={{ required: true }}
                 render={({ field }) => (
                   <Select
                     {...field}

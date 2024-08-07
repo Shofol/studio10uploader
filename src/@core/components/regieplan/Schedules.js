@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState
+  useState,
 } from "react";
 import { Box, Edit, File, Type } from "react-feather";
 import toast from "react-hot-toast";
@@ -17,7 +17,7 @@ import {
   NavItem,
   NavLink,
   TabContent,
-  TabPane
+  TabPane,
 } from "reactstrap";
 import api from "../../api/api";
 import FileForm from "./FileForm";
@@ -25,6 +25,7 @@ import GroupForm from "./GroupForm";
 import PrintData from "./PrintData";
 import ScheduleList from "./ScheduleList";
 import TextForm from "./TextForm";
+import ScheduleTypes from "../../../utility/data/scheduleTypes.json";
 
 const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
   const [active, setActive] = useState(0);
@@ -34,43 +35,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
   const [editIndex, setEditIndex] = useState(null);
   const [printData, setPrintData] = useState(null);
   const printRef = useRef();
-  const [scheduleTypes, setScheduleTypes] = useState([
-    {
-      label: "Vor Dem Spiel",
-      value: 0,
-      scheduleData: null,
-      isReverse: true,
-      section: "beforeGame"
-    },
-    {
-      label: "1. Halbzeit",
-      value: 1,
-      scheduleData: null,
-      isReverse: false,
-      section: "firstHalf"
-    },
-    {
-      label: "Pause",
-      value: 2,
-      scheduleData: null,
-      isReverse: false,
-      section: "break"
-    },
-    {
-      label: "2. Halbzeit",
-      value: 3,
-      scheduleData: null,
-      isReverse: false,
-      section: "secondHalf"
-    },
-    {
-      label: "Nach Dem Spiel",
-      value: 4,
-      scheduleData: null,
-      isReverse: false,
-      section: "afterGame"
-    }
-  ]);
+  const [scheduleTypes, setScheduleTypes] = useState(ScheduleTypes);
 
   const refs = useRef([]);
 
@@ -82,7 +47,8 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
       const tempData = result.data.data.map((item) => ({
         id: item.id,
         label: item.title,
-        fileType: item.file_type
+        fileType: item.file_type,
+        duration: item.file_duration,
       }));
       setFileList(tempData);
     } catch (error) {
@@ -137,7 +103,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
       add(new Date(`2024-01-01T${startTime}`), {
         hours: +durationHours,
         minutes: +durationMinutes,
-        seconds: +durationSeconds
+        seconds: +durationSeconds,
       }),
       "HH:mm:ss"
     );
@@ -148,7 +114,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
     // update before game data
     const beforGameData = {
       ...tempData,
-      schedule: tempData.schedule.beforeGame
+      schedule: tempData.schedule.beforeGame,
     };
     // beforGameData.title = tempData.title;
     // beforGameData.startTime = tempData.startTime;
@@ -161,14 +127,14 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
     // firstHalfData.schedule = tempData.schedule.firstHalf;
     const firstHalfData = {
       ...tempData,
-      schedule: tempData.schedule.firstHalf
+      schedule: tempData.schedule.firstHalf,
     };
 
     // update game break data
     const pauseData = {
       ...tempData,
       startTime: calculateTime(0, 45, 0, tempData.startTime),
-      schedule: tempData.schedule.break
+      schedule: tempData.schedule.break,
     };
 
     // const pauseData = {};
@@ -180,7 +146,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
     const secondHalfData = {
       ...tempData,
       startTime: calculateTime(0, 60, 0, tempData.startTime),
-      schedule: tempData.schedule.secondHalf
+      schedule: tempData.schedule.secondHalf,
     };
     // const secondHalfData = {};
     // secondHalfData.title = tempData.title;
@@ -195,7 +161,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
     const afterGameData = {
       ...tempData,
       startTime: calculateTime(0, 105, 0, tempData.startTime),
-      schedule: tempData.schedule.afterGame
+      schedule: tempData.schedule.afterGame,
     };
 
     const tempArray = [...scheduleTypes];
@@ -241,7 +207,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
       firstHalf: [],
       break: [],
       secondHalf: [],
-      afterGame: []
+      afterGame: [],
     };
 
     setPrintData(prepareData(tempPrintData));
@@ -271,7 +237,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
     },
     handleSave(id) {
       submit(id);
-    }
+    },
   }));
 
   useEffect(() => {
@@ -279,7 +245,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
   }, [data]);
 
   const printContent = useReactToPrint({
-    content: () => printRef.current
+    content: () => printRef.current,
   });
 
   useEffect(() => {

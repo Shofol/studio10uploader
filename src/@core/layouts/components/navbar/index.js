@@ -37,9 +37,7 @@ const ThemeNavbar = (props) => {
           </NavItem>
         </ul>
         <NavItem className="d-none d-lg-block">
-          <NavLink className="nav-link-style">
-            <ThemeToggler />
-          </NavLink>
+          <NavLink className="nav-link-style">{/* <ThemeToggler /> */}</NavLink>
         </NavItem>
       </div>
       <NavbarUser skin={skin} setSkin={setSkin} />

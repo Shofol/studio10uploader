@@ -1,0 +1,37 @@
+[
+    {
+        "label": "Vor Dem Spiel",
+        "value": 0,
+        "scheduleData": null,
+        "isReverse": true,
+        "section": "beforeGame"
+    },
+    {
+        "label": "1. Halbzeit",
+        "value": 1,
+        "scheduleData": null,
+        "isReverse": false,
+        "section": "firstHalf"
+    },
+    {
+        "label": "Pause",
+        "value": 2,
+        "scheduleData": null,
+        "isReverse": false,
+        "section": "break"
+    },
+    {
+        "label": "2. Halbzeit",
+        "value": 3,
+        "scheduleData": null,
+        "isReverse": false,
+        "section": "secondHalf"
+    },
+    {
+        "label": "Nach Dem Spiel",
+        "value": 4,
+        "scheduleData": null,
+        "isReverse": false,
+        "section": "afterGame"
+    }
+]

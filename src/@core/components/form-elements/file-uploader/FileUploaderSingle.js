@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
   ListGroup,
-  ListGroupItem
+  ListGroupItem,
 } from "reactstrap";
 
 // ** Third Party Imports
@@ -19,7 +19,7 @@ import { DownloadCloud, FileText, X } from "react-feather";
 const FileUploaderSingle = ({
   onUpload,
   showTitle = false,
-  showUploadButton = false
+  showUploadButton = false,
 }) => {
   // ** State
   const [files, setFiles] = useState([]);
@@ -27,8 +27,8 @@ const FileUploaderSingle = ({
   const { getRootProps, getInputProps } = useDropzone({
     multiple: false,
     onDrop: (acceptedFiles) => {
-      setFiles([...files, ...acceptedFiles.map((file) => Object.assign(file))]);
-    }
+      setFiles([...acceptedFiles.map((file) => Object.assign(file))]);
+    },
   });
 
   const renderFilePreview = (file) => {
@@ -97,7 +97,7 @@ const FileUploaderSingle = ({
           <div
             {...getRootProps({
               className:
-                "cursor-pointer bg-primary text-white px-2 py-1 rounded cursor-pointer"
+                "cursor-pointer bg-primary text-white px-2 py-1 rounded cursor-pointer",
             })}
           >
             <label className="cursor-pointer">Publish Now</label>
