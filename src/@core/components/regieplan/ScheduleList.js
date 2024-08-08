@@ -11,7 +11,10 @@ import { Copy, Edit, File, Trash } from "react-feather";
 // ** Reactstrap Imports
 import { hoursToSeconds, minutesToSeconds } from "date-fns";
 import { Button, Card, CardHeader, Table } from "reactstrap";
-import { formatSeconds } from "../../../utility/functions/formatTime";
+import {
+  convertToSeconds,
+  formatSeconds,
+} from "../../../utility/functions/formatTime";
 import { updateReverseStartTime } from "../../../utility/functions/updateReverseStartTime";
 import { updateStartTime } from "../../../utility/functions/updateStartTime";
 
@@ -28,7 +31,7 @@ const ScheduleList = forwardRef(
     const [selectedGroupIndex, setSelectedGroupIndex] = useState(null);
     const [childEditIndex, setChildEditIndex] = useState(null);
     const [editData, setEditData] = useState(null);
-    // const [entryMethod, setEntryMethod] = useState(null);
+    const [totalDuration, setTotalDuration] = useState(0);
 
     const handleModal = () => {
       setModal(!modal);
@@ -67,6 +70,16 @@ const ScheduleList = forwardRef(
     };
 
     const handleNewEntry = (entry, index) => {
+      console.log(totalDuration);
+      if (
+        data.duration &&
+        convertToSeconds(entry.duration) + totalDuration > data.duration
+      ) {
+        alert("Limit Crossed");
+        return;
+      } else {
+        setTotalDuration(totalDuration + convertToSeconds(entry.duration));
+      }
       const tempArray = [...listArr];
       if (index !== undefined && index >= 0) {
         tempArray[index] = entry;

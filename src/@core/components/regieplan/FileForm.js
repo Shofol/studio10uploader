@@ -141,7 +141,7 @@ const FileForm = ({ open, handleModal, data, fileList, onFormSubmit }) => {
                       className=" w-100"
                       options={files}
                       onChange={(item) => {
-                        if (!item.fileType.includes("image")) {
+                        if (item && !item.fileType.includes("image")) {
                           setIsImage(false);
                           setValue("duration", item.duration);
                         } else {

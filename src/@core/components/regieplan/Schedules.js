@@ -111,53 +111,31 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
 
   const mapData = () => {
     const tempData = { ...data };
-    // update before game data
     const beforGameData = {
       ...tempData,
       schedule: tempData.schedule.beforeGame,
     };
-    // beforGameData.title = tempData.title;
-    // beforGameData.startTime = tempData.startTime;
-    // beforGameData.schedule = tempData.schedule.beforeGame;
 
-    // update first half game data
-    // const firstHalfData = {};
-    // firstHalfData.title = tempData.title;
-    // firstHalfData.startTime = tempData.startTime;
-    // firstHalfData.schedule = tempData.schedule.firstHalf;
     const firstHalfData = {
       ...tempData,
       schedule: tempData.schedule.firstHalf,
+      duration: 2700,
     };
 
-    // update game break data
     const pauseData = {
       ...tempData,
       startTime: calculateTime(0, 45, 0, tempData.startTime),
       schedule: tempData.schedule.break,
+      duration: 900,
     };
 
-    // const pauseData = {};
-    // pauseData.title = tempData.title;
-    // pauseData.startTime = calculateTime(0, 45, 0, tempData.startTime);
-    // pauseData.schedule = tempData.schedule.break;
-
-    // update first half game data
     const secondHalfData = {
       ...tempData,
       startTime: calculateTime(0, 60, 0, tempData.startTime),
       schedule: tempData.schedule.secondHalf,
+      duration: 2700,
     };
-    // const secondHalfData = {};
-    // secondHalfData.title = tempData.title;
-    // secondHalfData.startTime = calculateTime(0, 60, 0, tempData.startTime);
-    // secondHalfData.schedule = tempData.schedule.secondHalf;
 
-    // update first half game data
-    // const afterGameData = {};
-    // afterGameData.title = tempData.title;
-    // afterGameData.startTime = calculateTime(0, 105, 0, tempData.startTime);
-    // afterGameData.schedule = tempData.schedule.afterGame;
     const afterGameData = {
       ...tempData,
       startTime: calculateTime(0, 105, 0, tempData.startTime),
