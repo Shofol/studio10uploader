@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
+  useState
 } from "react";
 import { Box, Edit, File, Type } from "react-feather";
 import toast from "react-hot-toast";
@@ -17,15 +17,15 @@ import {
   NavItem,
   NavLink,
   TabContent,
-  TabPane,
+  TabPane
 } from "reactstrap";
+import ScheduleTypes from "../../../utility/data/scheduleTypes.json";
 import api from "../../api/api";
 import FileForm from "./FileForm";
 import GroupForm from "./GroupForm";
 import PrintData from "./PrintData";
 import ScheduleList from "./ScheduleList";
 import TextForm from "./TextForm";
-import ScheduleTypes from "../../../utility/data/scheduleTypes.json";
 
 const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
   const [active, setActive] = useState(0);
@@ -36,7 +36,8 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
   const [printData, setPrintData] = useState(null);
   const printRef = useRef();
   const [scheduleTypes, setScheduleTypes] = useState(ScheduleTypes);
-
+  const fileFormRef = useRef();
+  const textFormRef = useRef();
   const refs = useRef([]);
 
   const [fileList, setFileList] = useState([]);
@@ -48,7 +49,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
         id: item.id,
         label: item.title,
         fileType: item.file_type,
-        duration: item.file_duration,
+        duration: item.file_duration
       }));
       setFileList(tempData);
     } catch (error) {
@@ -68,15 +69,6 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
     }
   };
 
-  const handleNewEntry = (entry) => {
-    if (editIndex !== null && editIndex >= 0) {
-      refs.current[active].handleEntry(entry, editIndex);
-    } else {
-      refs.current[active].handleEntry(entry);
-    }
-    setEditIndex(null);
-  };
-
   const handleModal = () => {
     if (modal) {
       setTimeout(() => {
@@ -84,6 +76,39 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
       }, 100);
     }
     setModal(!modal);
+  };
+
+  const checkTimeLimit = (entry) => {
+    return refs.current[active].canEntryAdded(entry);
+  };
+
+  const handleEntry = (entry) => {
+    if (editIndex !== null && editIndex >= 0) {
+      refs.current[active].handleEntry(entry, editIndex);
+    } else {
+      refs.current[active].handleEntry(entry);
+    }
+  };
+
+  const handleNewEntry = (entry) => {
+    if (entryMethod === "file" || entryMethod === "text") {
+      const canBeAdded = checkTimeLimit(entry);
+      if (canBeAdded) {
+        handleEntry(entry);
+        if (entryMethod === "file") {
+          fileFormRef.current.reset();
+        } else {
+          textFormRef.current.reset();
+        }
+        handleModal();
+      } else {
+        toast.error("Dauer can not exceed time limit");
+      }
+    } else {
+      handleEntry(entry);
+    }
+
+    setEditIndex(null);
   };
 
   const handleEdit = (entry, index) => {
@@ -103,7 +128,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
       add(new Date(`2024-01-01T${startTime}`), {
         hours: +durationHours,
         minutes: +durationMinutes,
-        seconds: +durationSeconds,
+        seconds: +durationSeconds
       }),
       "HH:mm:ss"
     );
@@ -113,33 +138,33 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
     const tempData = { ...data };
     const beforGameData = {
       ...tempData,
-      schedule: tempData.schedule.beforeGame,
+      schedule: tempData.schedule.beforeGame
     };
 
     const firstHalfData = {
       ...tempData,
       schedule: tempData.schedule.firstHalf,
-      duration: 2700,
+      duration: 2700
     };
 
     const pauseData = {
       ...tempData,
       startTime: calculateTime(0, 45, 0, tempData.startTime),
       schedule: tempData.schedule.break,
-      duration: 900,
+      duration: 900
     };
 
     const secondHalfData = {
       ...tempData,
       startTime: calculateTime(0, 60, 0, tempData.startTime),
       schedule: tempData.schedule.secondHalf,
-      duration: 2700,
+      duration: 2700
     };
 
     const afterGameData = {
       ...tempData,
       startTime: calculateTime(0, 105, 0, tempData.startTime),
-      schedule: tempData.schedule.afterGame,
+      schedule: tempData.schedule.afterGame
     };
 
     const tempArray = [...scheduleTypes];
@@ -185,7 +210,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
       firstHalf: [],
       break: [],
       secondHalf: [],
-      afterGame: [],
+      afterGame: []
     };
 
     setPrintData(prepareData(tempPrintData));
@@ -215,7 +240,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
     },
     handleSave(id) {
       submit(id);
-    },
+    }
   }));
 
   useEffect(() => {
@@ -223,7 +248,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
   }, [data]);
 
   const printContent = useReactToPrint({
-    content: () => printRef.current,
+    content: () => printRef.current
   });
 
   useEffect(() => {
@@ -350,6 +375,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
               data={editData}
               handleModal={handleModal}
               onFormSubmit={handleNewEntry}
+              ref={fileFormRef}
             />
           )}
           {entryMethod === "group" && (
@@ -363,6 +389,7 @@ const Schedules = forwardRef(({ data, handlePlanEdit, onSaveSuccess }, ref) => {
           )}
           {entryMethod === "text" && (
             <TextForm
+              ref={textFormRef}
               fileList={fileList}
               open={modal}
               data={editData}

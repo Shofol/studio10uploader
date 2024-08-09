@@ -4,16 +4,15 @@ import {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
+  useState
 } from "react";
 import { Copy, Edit, File, Trash } from "react-feather";
 
 // ** Reactstrap Imports
-import { hoursToSeconds, minutesToSeconds } from "date-fns";
 import { Button, Card, CardHeader, Table } from "reactstrap";
 import {
   convertToSeconds,
-  formatSeconds,
+  formatSeconds
 } from "../../../utility/functions/formatTime";
 import { updateReverseStartTime } from "../../../utility/functions/updateReverseStartTime";
 import { updateStartTime } from "../../../utility/functions/updateStartTime";
@@ -32,74 +31,93 @@ const ScheduleList = forwardRef(
     const [childEditIndex, setChildEditIndex] = useState(null);
     const [editData, setEditData] = useState(null);
     const [totalDuration, setTotalDuration] = useState(0);
+    const prevScheduleStartTime = useRef(null);
 
     const handleModal = () => {
       setModal(!modal);
     };
 
-    useEffect(() => {
-      setListArr(
-        isReverse
-          ? updateReverseStartTime(data.schedule, data.startTime)
-          : updateStartTime(data.schedule, data.startTime)
-      );
-    }, [data]);
-
     const updateData = async (entry, action, isChildren = false) => {
       try {
-        await api.post("event/action", {
-          section,
-          action,
-          eventId: data.id ? data.id : null,
-          category: isChildren ? "children" : "parent",
-          data: entry,
-        });
-        toast.success("Entry Updated Successfully");
+        await api.post(
+          "event/action",
+          {
+            section,
+            action,
+            eventId: data.id ? data.id : null,
+            category: isChildren ? "children" : "parent",
+            data: entry
+          },
+          { showLoader: false }
+        );
+        // toast.success("Entry Updated Successfully");
       } catch (error) {
         console.error(error);
       }
     };
 
+    const updateAllStartTime = (updatedList) => {
+      updateData(updatedList, "edit");
+    };
+
+    useEffect(() => {
+      const updatedList = isReverse
+        ? updateReverseStartTime(data.schedule, data.startTime)
+        : updateStartTime(data.schedule, data.startTime);
+      setListArr(updatedList);
+      if (
+        data.id &&
+        prevScheduleStartTime.current !== null &&
+        prevScheduleStartTime.current !== data.startTime &&
+        updatedList.length > 0
+      ) {
+        updateAllStartTime(updatedList);
+      }
+      prevScheduleStartTime.current = data.startTime;
+    }, [data]);
+
     const handleEditData = (index, entry, updatedList) => {
       if (data.id && index !== undefined && index >= 0) {
-        updateData(updatedList[index], "edit");
+        updateData([updatedList[index]], "edit");
       }
       if (data.id && (index === undefined || index === null)) {
-        updateData(entry, "add");
+        updateData([entry], "add");
       }
     };
 
-    const handleNewEntry = (entry, index) => {
-      console.log(totalDuration);
+    const canEntryAdded = (entry) => {
       if (
         data.duration &&
         convertToSeconds(entry.duration) + totalDuration > data.duration
       ) {
-        alert("Limit Crossed");
-        return;
-      } else {
-        setTotalDuration(totalDuration + convertToSeconds(entry.duration));
+        return false;
       }
+      return true;
+    };
+
+    const handleNewEntry = (entry, index) => {
       const tempArray = [...listArr];
+      let entryData = { ...entry };
       if (index !== undefined && index >= 0) {
-        tempArray[index] = entry;
+        tempArray[index] = entryData;
+        toast.success("Entry Updated Successfully.");
       } else {
-        tempArray.push({ ...entry, itemOrder: tempArray.length });
+        entryData = { ...entry, itemOrder: tempArray.length };
+        tempArray.push(entryData);
+        toast.success("New Entry Added Successfully.");
       }
       const updatedList = isReverse
         ? updateReverseStartTime(tempArray, data.startTime)
         : updateStartTime(tempArray, data.startTime);
       setListArr(updatedList);
-      handleEditData(index, entry, updatedList);
+      handleEditData(index, entryData, updatedList);
+      setTotalDuration(totalDuration + convertToSeconds(entry.duration));
     };
 
     const updateDuration = (list) => {
       let seconds = 0;
       list.map((item) => {
-        const [itemHours, itemMinutes, itemSeconds] = item.duration.split(":");
-        const hoursInSeconds = hoursToSeconds(itemHours);
-        const minutesInseconds = minutesToSeconds(itemMinutes);
-        seconds = seconds + +hoursInSeconds + +minutesInseconds + +itemSeconds;
+        seconds = seconds + convertToSeconds(item.duration);
       });
       return formatSeconds(seconds);
     };
@@ -129,6 +147,12 @@ const ScheduleList = forwardRef(
     };
 
     const handleChildEntry = (entry, index) => {
+      const canBeAdded = canEntryAdded(entry);
+      if (!canBeAdded) {
+        toast.error("Dauer can not exceed time limit");
+        return;
+      }
+
       const parentIndex = index ? index : selectedGroupIndex;
       const tempArray = [...listArr];
 
@@ -137,7 +161,7 @@ const ScheduleList = forwardRef(
       } else {
         tempArray[parentIndex].children.push({
           ...entry,
-          itemOrder: tempArray[parentIndex].children.length,
+          itemOrder: tempArray[parentIndex].children.length
         });
       }
 
@@ -151,16 +175,27 @@ const ScheduleList = forwardRef(
 
       handleEditChildData(updatedList, parentIndex, entry, tempArray);
       setListArr(updatedList);
+      setTotalDuration(totalDuration + convertToSeconds(entry.duration));
     };
 
     const handleCopy = (entry) => {
-      entry.startTime = null;
-      handleNewEntry(entry);
+      const canBeAdded = canEntryAdded(entry);
+      if (canBeAdded) {
+        entry.startTime = null;
+        handleNewEntry(entry);
+      } else {
+        toast.error("Dauer can not exceed time limit");
+      }
     };
 
     const handleChildCopy = (entry, index) => {
-      entry.startTime = null;
-      handleChildEntry(entry, index);
+      const canBeAdded = canEntryAdded(entry);
+      if (canBeAdded) {
+        entry.startTime = null;
+        handleChildEntry(entry, index);
+      } else {
+        toast.error("Dauer can not exceed time limit");
+      }
     };
 
     const deleteEntry = async (entry, isChildren = false) => {
@@ -169,7 +204,7 @@ const ScheduleList = forwardRef(
           section,
           action: "delete",
           category: isChildren ? "children" : "parent",
-          id: entry.id,
+          id: entry.id
         });
         toast.success("Entry Deleted Successfully");
       } catch (error) {
@@ -182,6 +217,9 @@ const ScheduleList = forwardRef(
       if (data.id) {
         deleteEntry(tempArray[index]);
       }
+      setTotalDuration(
+        totalDuration - convertToSeconds(tempArray[index].duration)
+      );
       tempArray.splice(index, 1);
       setListArr(
         isReverse
@@ -196,7 +234,6 @@ const ScheduleList = forwardRef(
         setSelectedGroupIndex(index);
         setChildEditIndex(childIndex);
       }
-      // setEntryMethod(entry.type);
       handleModal();
     };
 
@@ -205,6 +242,10 @@ const ScheduleList = forwardRef(
       if (data.id) {
         deleteEntry(tempArray[index].children[childIndex], true);
       }
+      setTotalDuration(
+        totalDuration -
+          convertToSeconds(tempArray[index].children[childIndex].duration)
+      );
       tempArray[index].children.splice(childIndex, 1);
       tempArray[index].duration = updateDuration(tempArray[index].children);
       setListArr(
@@ -219,26 +260,30 @@ const ScheduleList = forwardRef(
         handleNewEntry(entry, index);
       },
 
+      canEntryAdded(entry) {
+        return canEntryAdded(entry);
+      },
+
       getData() {
         return listArr;
-      },
+      }
     }));
 
-    const swap = (array) => {
+    const swap = (array, isChildren) => {
       const tempArray = [...array];
       const dragItemOrder = tempArray[dragItem.current].itemOrder;
       const dragOverItemOrder = tempArray[dragOverItem.current].itemOrder;
 
       const temp = tempArray[dragItem.current];
-      tempArray[dragItem.current] = {
-        ...tempArray[dragOverItem.current],
-        itemOrder: dragItemOrder,
-      };
-      tempArray[dragOverItem.current] = {
-        ...temp,
-        itemOrder: dragOverItemOrder,
-      };
+      tempArray[dragItem.current] = tempArray[dragOverItem.current];
+      tempArray[dragOverItem.current] = temp;
 
+      tempArray[dragItem.current].itemOrder = dragItemOrder;
+      tempArray[dragOverItem.current].itemOrder = dragOverItemOrder;
+
+      if (data.id) {
+        updateData(tempArray, "edit", !!isChildren);
+      }
       return tempArray;
     };
 
@@ -253,10 +298,13 @@ const ScheduleList = forwardRef(
     const handleChildSort = (parentIndex, childArray) => {
       const swappedChildArray = isReverse
         ? updateReverseStartTime(
-            swap(childArray),
+            swap(childArray, true),
             listArr[parentIndex].startTime
           )
-        : updateStartTime(swap(childArray), listArr[parentIndex].startTime);
+        : updateStartTime(
+            swap(childArray, true),
+            listArr[parentIndex].startTime
+          );
       const tempArray = [...listArr];
       tempArray[parentIndex].children = swappedChildArray;
       setListArr(tempArray);
@@ -292,7 +340,7 @@ const ScheduleList = forwardRef(
             </thead>
             <tbody>
               {listArr
-                .sort((prev, next) => next.itemOrder - prev.itemOrder)
+                .sort((prev, next) => prev.itemOrder - next.itemOrder)
                 .map((item, index) => {
                   return (
                     <>
@@ -308,7 +356,7 @@ const ScheduleList = forwardRef(
                       >
                         <td
                           style={{
-                            width: "100px",
+                            width: "100px"
                           }}
                           className={getBgColor(item)}
                         >
@@ -426,7 +474,7 @@ const ScheduleList = forwardRef(
                                 <td
                                   style={{
                                     width: "100px",
-                                    paddingLeft: "36px",
+                                    paddingLeft: "36px"
                                   }}
                                   className={getBgColor(child)}
                                 >

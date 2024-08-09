@@ -73,14 +73,14 @@ WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BET
 }
 
 $colors: (
-  "6E7083": #6E7083,
-  "D5BA57": #D5BA57,
-  "C86F6F": #C86F6F,
-  "93AC94": #93AC94,
-  "A5BEE7": #A5BEE7,
-  "E1AC80": #E1AC80,
-  "A78C7D": #A78C7D,
-  "FF0000": #FF0000
+  "6E7083": #6e7083,
+  "D5BA57": #d5ba57,
+  "C86F6F": #c86f6f,
+  "93AC94": #93ac94,
+  "A5BEE7": #a5bee7,
+  "E1AC80": #e1ac80,
+  "A78C7D": #a78c7d,
+  "FF0000": #ff0000
 );
 
 @each $name, $color in $colors {
@@ -90,11 +90,27 @@ $colors: (
   }
 }
 
-.rdt_TableCell{
+.rdt_TableCell {
   cursor: pointer;
 }
 
-.select__menu .select__menu-list .select__option.select__option--is-selected{
+.select__menu .select__menu-list .select__option.select__option--is-selected {
   background: white !important;
   color: #6e6b7b !important;
+}
+
+.print-section {
+  visibility: hidden;
+}
+
+@media print {
+  .print-section {
+    visibility: visible;
+  }
+  html, body {
+    height: auto;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
 }

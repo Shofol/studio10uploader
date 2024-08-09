@@ -1,42 +1,44 @@
 import React, { forwardRef } from "react";
 
-const generateTable = (schedule) => {
+const generateTable = (schedule, parentIndex, isChildren = false) => {
   return (
     <div className="d-flex flex-column">
-      <div
-        className="d-flex "
-        style={{
-          textAlign: "center",
-          background: "#f3f2f7"
-        }}
-      >
+      {!isChildren && (
         <div
-          className="row"
+          className="d-flex "
           style={{
-            width: "50px"
+            textAlign: "center",
+            background: "#f3f2f7"
           }}
         >
-          Pos
+          <div
+            className="row"
+            style={{
+              width: "50px"
+            }}
+          >
+            Pos
+          </div>
+          <div className="row" style={{ width: "100px" }}>
+            Bild
+          </div>
+          <div className="row" style={{ width: "100px" }}>
+            Ton
+          </div>
+          <div className="row" style={{ width: "100px" }}>
+            Uhrzeit
+          </div>
+          <div className="row" style={{ width: "100px" }}>
+            Dauer
+          </div>
+          <div className="row" style={{ width: "150px" }}>
+            File-Name
+          </div>
+          <div className="row" style={{ width: "150px" }}>
+            Kommentar
+          </div>
         </div>
-        <div className="row" style={{ width: "100px" }}>
-          Bild
-        </div>
-        <div className="row" style={{ width: "100px" }}>
-          Ton
-        </div>
-        <div className="row" style={{ width: "100px" }}>
-          Uhrzeit
-        </div>
-        <div className="row" style={{ width: "100px" }}>
-          Dauer
-        </div>
-        <div className="row" style={{ width: "150px" }}>
-          File-Name
-        </div>
-        <div className="row" style={{ width: "150px" }}>
-          Kommentar
-        </div>
-      </div>
+      )}
       {schedule.map((item, index) => {
         return (
           <>
@@ -54,6 +56,7 @@ const generateTable = (schedule) => {
                   width: "50px"
                 }}
               >
+                {isChildren ? `${parentIndex + 1}.` : ""}
                 {index + 1}
               </div>
               <div className="row" style={{ width: "100px" }}>
@@ -75,7 +78,7 @@ const generateTable = (schedule) => {
                 {item.comment}
               </div>
             </div>
-            {item.children && generateTable(item.children)}
+            {item.children && generateTable(item.children, index, true)}
           </>
         );
       })}
@@ -85,7 +88,7 @@ const generateTable = (schedule) => {
 
 const PrintData = forwardRef(({ data }, ref) => {
   return (
-    <div ref={ref}>
+    <div ref={ref} className="print-section">
       <div className="d-flex justify-content-between">
         <h4 className="pb-2">
           {data.title} (Uhrzeit: {data.startTime})

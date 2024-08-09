@@ -13,6 +13,9 @@ api.interceptors.request.use(function (config) {
     loadingToast = toast.loading("Loading...", {
       style: { minWidth: "250px", fontWeight: "bold" }
     });
+    if (config.showLoader && config.showLoader === false) {
+      toast.dismiss(loadingToast);
+    }
   }
   if (config.method === "get" && config.data) {
     showNotFoundError = config.data.showNotFoundError;

@@ -45,9 +45,10 @@ const Regieplan = () => {
           round: plan.round,
           opponent: plan.opponent,
           status: plan.status,
-          startTime: plan.startTime,
-        },
+          startTime: plan.startTime
+        }
       });
+      console.log(result);
       toast.success("Event Updated Successfully");
     } catch (error) {
       console.error(error);
