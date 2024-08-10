@@ -1,4 +1,4 @@
-import { intervalToDuration } from "date-fns";
+import { hoursToSeconds, intervalToDuration, minutesToSeconds } from "date-fns";
 
 export const formatSeconds = (seconds) => {
   const duration = intervalToDuration({ start: 0, end: seconds * 1000 });
@@ -10,13 +10,13 @@ export const formatSeconds = (seconds) => {
     duration.seconds ? duration.seconds : "0"
   )}`;
   return formatted;
+};
 
-  // const formatted = formatDuration(duration, {
-  //   format: ["hours", "minutes", "seconds"],
-  //   zero: true,
-  //   delimiter: ":",
-  //   // locale: {
-  //   //   formatDistance: (_token, count) => zeroPad(count)
-  //   // }
-  // });
+export const convertToSeconds = (time) => {
+  const [durationHours, durationMinutes, durationSeconds] = time.split(":");
+  return (
+    hoursToSeconds(+durationHours) +
+    minutesToSeconds(+durationMinutes) +
+    +durationSeconds
+  );
 };

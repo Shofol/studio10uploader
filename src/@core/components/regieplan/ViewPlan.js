@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { ChevronDown, Edit, Trash } from "react-feather";
+import { ChevronDown, Copy, Edit, Eye, Trash } from "react-feather";
 import toast from "react-hot-toast";
 import ReactPaginate from "react-paginate";
 import {
@@ -118,17 +118,39 @@ const ViewPlan = ({ open, handleModal, onSelect }) => {
     },
     {
       name: "Actions",
-      allowOverflow: true,
+      minWidth: "300px",
+      // allowOverflow: true,
       cell: (row) => {
         return (
-          <div className="d-flex w-100 ">
+          <div className="d-flex w-100">
             <div
               tag="a"
               href="/"
               className="me-1 cursor-pointer"
               onClick={() => {
-                // setSelectedRowToEdit(row);
-                // setModal(!modal);
+                onSelect(row, "view");
+              }}
+            >
+              <Eye size={15} className="text-primary" />
+              <span className="align-middle ms-50 text-primary">View</span>
+            </div>
+            <div
+              tag="a"
+              href="/"
+              className="me-1 cursor-pointer"
+              onClick={() => {
+                onSelect(row, "new");
+              }}
+            >
+              <Copy size={15} className="text-primary" />
+              <span className="align-middle ms-50 text-primary">Copy</span>
+            </div>
+            <div
+              tag="a"
+              href="/"
+              className="me-1 cursor-pointer"
+              onClick={() => {
+                onSelect(row, "edit");
               }}
             >
               <Edit size={15} className="text-primary" />
@@ -166,25 +188,12 @@ const ViewPlan = ({ open, handleModal, onSelect }) => {
             <DataTable
               noHeader
               pagination
-              // selectableRows
               columns={columns}
-              // paginationPerPage={offset}
               className="react-dataTable"
               sortIcon={<ChevronDown size={10} />}
               paginationComponent={CustomPagination}
               style={{ cursor: "pointer" }}
-              // paginationDefaultPage={currentPage + 1}
-              // selectableRowsComponent={BootstrapCheckbox}
               data={data}
-              onRowClicked={(data) => {
-                // setSelectedRowToView(data);
-                // setViewModal(!modal);
-                onSelect(data);
-              }}
-              // onSelectedRowsChange={(e) => {
-              //   // setSelectedRowsToDelete(e.selectedRows);
-              //   console.log(e);
-              // }}
             />
           </div>
         </Card>

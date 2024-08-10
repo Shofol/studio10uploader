@@ -14,11 +14,15 @@ const Regieplan = () => {
   const [openPlan, setOpenPlan] = useState(false);
   const listRef = useRef(null);
   const [eventId, setEventId] = useState(null);
+  const [viewMode, setViewMode] = useState(false);
 
   const handleModal = () => {
     if (modal) {
       setNewPlan(false);
       setOpenPlan(false);
+    }
+    if (!modal) {
+      setViewMode(false);
     }
     setModal(!modal);
   };
@@ -48,6 +52,7 @@ const Regieplan = () => {
           startTime: plan.startTime
         }
       });
+      console.log(result);
       toast.success("Event Updated Successfully");
     } catch (error) {
       console.error(error);
@@ -83,7 +88,7 @@ const Regieplan = () => {
               <Folder size={14} />
               <span className="align-middle ms-25">Open</span>
             </Button.Ripple>
-            {currentSchedule && !currentSchedule.id && (
+            {!viewMode && currentSchedule && !currentSchedule.id && (
               <Button.Ripple
                 size="sm"
                 outline
@@ -95,18 +100,20 @@ const Regieplan = () => {
                 <span className="align-middle ms-25">Save</span>
               </Button.Ripple>
             )}
-            <Button.Ripple
-              size="sm"
-              outline
-              onClick={() => {
-                if (listRef.current) {
-                  listRef.current.handlePrintData();
-                }
-              }}
-            >
-              <Printer size={14} />
-              <span className="align-middle ms-25">Print</span>
-            </Button.Ripple>
+            {currentSchedule && (
+              <Button.Ripple
+                size="sm"
+                outline
+                onClick={() => {
+                  if (listRef.current) {
+                    listRef.current.handlePrintData();
+                  }
+                }}
+              >
+                <Printer size={14} />
+                <span className="align-middle ms-25">Print</span>
+              </Button.Ripple>
+            )}
           </div>
         </div>
 
@@ -115,6 +122,7 @@ const Regieplan = () => {
             <Schedules
               ref={listRef}
               data={currentSchedule}
+              viewMode={viewMode}
               handlePlanEdit={() => handleEdit()}
               onSaveSuccess={() => {
                 setCurrentSchedule(null);
@@ -149,7 +157,12 @@ const Regieplan = () => {
           <ViewPlan
             open={modal}
             handleModal={handleModal}
-            onSelect={(plan) => {
+            onSelect={(plan, mode) => {
+              if (mode === "new") {
+                plan.id = null;
+              } else if (mode === "view") {
+                setViewMode(true);
+              }
               setCurrentSchedule(plan);
               setEventId(plan.id);
               handleModal();

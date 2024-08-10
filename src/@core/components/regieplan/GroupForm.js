@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import { X } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import {
   Button,
   Col,
@@ -12,7 +11,7 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
-  Row,
+  Row
 } from "reactstrap";
 
 // ** Utils
@@ -27,15 +26,15 @@ const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
     duration: data ? data.duration : "00:00:00",
     comment: data ? data.comment : "",
     startTime: data ? data.startTime : "",
-    children: data ? data.children : [],
+    children: data ? data.children : []
   };
   const {
     handleSubmit,
     control,
     reset,
-    formState: { errors },
+    formState: { errors }
   } = useForm({
-    defaultValues: initialValues,
+    defaultValues: initialValues
   });
 
   useEffect(() => {
@@ -46,7 +45,7 @@ const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
 
   const onSubmit = (data) => {
     onFormSubmit(data);
-    toast.success("New Entry Added Successfully.");
+    // toast.success("New Entry Added Successfully.");
     reset(initialValues);
     handleModal();
   };
@@ -85,7 +84,7 @@ const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
                 render={({ field }) => <Input {...field} placeholder="Titel" />}
               />
             </Col>
-            {errors.comment && <p className="text-danger">This is required.</p>}
+            {errors.name && <p className="text-danger">This is required.</p>}
 
             <Col sm="12" className="mb-1">
               <Label className="form-label" for="comment">
@@ -116,7 +115,7 @@ const GroupForm = ({ open, handleModal, data, onFormSubmit }) => {
                     reset({
                       ...initialValues,
                       comment: "",
-                      name: "",
+                      name: ""
                     });
                   }}
                 >

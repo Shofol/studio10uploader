@@ -160,7 +160,7 @@ const NewPlan = ({ open, handleModal, data, onFormSubmit }) => {
                 rules={{ required: true }}
                 render={({ field }) => (
                   <Input
-                    disabled={data?.id >= 0}
+                    // disabled={data?.id >= 0}
                     {...field}
                     type="time"
                     step={1}
