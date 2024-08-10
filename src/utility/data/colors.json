@@ -1,5 +1,10 @@
 [
     {
+        "id": 0,
+        "value": null,
+        "label": "No color"
+    },
+    {
         "id": 1,
         "value": "#6E7083",
         "label": "#6E7083"

@@ -43,6 +43,7 @@ const TextForm = forwardRef(
       reset,
       watch,
       setValue,
+      getValues,
       formState: { errors }
     } = useForm({
       defaultValues: initialValues
@@ -186,11 +187,14 @@ const TextForm = forwardRef(
                             ref={audioFileValueRef}
                             {...field}
                             isClearable
-                            // isSearchable
                             className="react-select w-100"
                             options={fileList.filter((item) =>
                               item.fileType.includes("audio")
                             )}
+                            onChange={(item) => {
+                              setValue("duration", item.duration);
+                              field.onChange(item);
+                            }}
                           />
                         )}
                       />
@@ -201,7 +205,6 @@ const TextForm = forwardRef(
                   )}
                 </>
               )}
-
               <Col sm="12" className="mb-1">
                 <Label className="form-label" for="duration">
                   Dauer

@@ -189,13 +189,13 @@ const ScheduleList = forwardRef(
     };
 
     const handleChildCopy = (entry, index) => {
-      const canBeAdded = canEntryAdded(entry);
-      if (canBeAdded) {
-        entry.startTime = null;
-        handleChildEntry(entry, index);
-      } else {
-        toast.error("Dauer can not exceed time limit");
-      }
+      // const canBeAdded = canEntryAdded(entry);
+      // if (canBeAdded) {
+      entry.startTime = null;
+      handleChildEntry(entry, index);
+      // } else {
+      //   toast.error("Dauer can not exceed time limit");
+      // }
     };
 
     const deleteEntry = async (entry, isChildren = false) => {
@@ -452,7 +452,7 @@ const ScheduleList = forwardRef(
                       {item.children &&
                         item.children.length > 0 &&
                         item.children
-                          .sort((prev, next) => next.itemOrder - prev.itemOrder)
+                          .sort((prev, next) => prev.itemOrder - next.itemOrder)
                           .map((child, childIndex) => {
                             return (
                               <tr
