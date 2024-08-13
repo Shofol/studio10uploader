@@ -225,7 +225,7 @@ const FileForm = forwardRef(
                   name="mediaType"
                   type="text"
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: !!isImage }}
                   render={({ field }) => (
                     <Select
                       {...field}
