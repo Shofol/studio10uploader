@@ -71,6 +71,17 @@ const FileForm = forwardRef(
             fileList.find((item) => item.id === data.audio)
           );
         }
+        if (data.files_id) {
+          if (
+            !files
+              .find(
+                (item) => item.id === (data.files_id ? data.files_id : data.id)
+              )
+              .fileType.includes("image")
+          ) {
+            setIsImage(false);
+          }
+        }
       }
     }, [data]);
 
