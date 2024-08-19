@@ -329,8 +329,8 @@ const ScheduleList = forwardRef(
             <thead>
               <tr>
                 <th style={{ width: "100px" }}>Pos</th>
-                <th style={{ width: "100px" }}>Bild</th>
                 <th style={{ width: "100px" }}>Ton</th>
+                <th style={{ width: "100px" }}>Bild</th>
                 <th style={{ width: "300px" }}>Uhrzeit</th>
                 <th style={{ width: "100px" }}>Dauer</th>
                 <th style={{ width: "300px" }}>File-Name</th>

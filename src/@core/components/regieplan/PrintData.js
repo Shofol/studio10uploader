@@ -20,10 +20,10 @@ const generateTable = (schedule, parentIndex, isChildren = false) => {
             Pos
           </div>
           <div className="row" style={{ width: "100px" }}>
-            Bild
+            Ton
           </div>
           <div className="row" style={{ width: "100px" }}>
-            Ton
+            Bild
           </div>
           <div className="row" style={{ width: "100px" }}>
             Uhrzeit

@@ -107,10 +107,14 @@ $colors: (
   .print-section {
     visibility: visible;
   }
-  html, body {
+  html,
+  body {
     height: auto;
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden;
+  }
+  .row {
+    break-inside: avoid;
   }
 }
